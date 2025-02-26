@@ -8,10 +8,12 @@ import {
     OAuthProvider,
     setPersistence,
     browserLocalPersistence,
-    browserSessionPersistence
+    browserSessionPersistence,
+    onAuthStateChanged
 } from 'firebase/auth';
 import { AuthService, AuthUser } from './types';
 import { firebaseConfig } from '../../config/firebase';
+import { FirestoreUserService } from '../db/firestore-user';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -24,10 +26,23 @@ if (process.env.NODE_ENV === 'development') {
 const googleProvider = new GoogleAuthProvider();
 const microsoftProvider = new OAuthProvider('microsoft.com');
 
+const userService = new FirestoreUserService();
+
 export class FirebaseAuthService implements AuthService {
     async signIn(email: string, password: string, remember: boolean = false): Promise<AuthUser> {
         await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
         const result = await signInWithEmailAndPassword(auth, email, password);
+        
+        // Create user document if it doesn't exist
+        const user = await userService.getUser(result.user.uid);
+        if (!user) {
+            await userService.createUser({
+                id: result.user.uid,
+                email: result.user.email!,
+                displayName: result.user.displayName || undefined
+            });
+        }
+        
         return {
             id: result.user.uid,
             email: result.user.email!,
@@ -40,18 +55,36 @@ export class FirebaseAuthService implements AuthService {
     }
 
     async getCurrentUser(): Promise<AuthUser | null> {
-        const user = auth.currentUser;
-        if (!user) return null;
-
-        return {
-            id: user.uid,
-            email: user.email!,
-            displayName: user.displayName || undefined
-        };
+        // Wait for auth state to be restored
+        return new Promise((resolve) => {
+            const unsubscribe = onAuthStateChanged(auth, (user) => {
+                unsubscribe(); // Stop listening after first response
+                if (!user) {
+                    resolve(null);
+                    return;
+                }
+                resolve({
+                    id: user.uid,
+                    email: user.email!,
+                    displayName: user.displayName || undefined
+                });
+            });
+        });
     }
 
     async signInWithGoogle(): Promise<AuthUser> {
         const result = await signInWithPopup(auth, googleProvider);
+        
+        // Create user document if it doesn't exist
+        const user = await userService.getUser(result.user.uid);
+        if (!user) {
+            await userService.createUser({
+                id: result.user.uid,
+                email: result.user.email!,
+                displayName: result.user.displayName || undefined
+            });
+        }
+        
         return {
             id: result.user.uid,
             email: result.user.email!,

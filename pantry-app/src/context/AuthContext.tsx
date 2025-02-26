@@ -16,7 +16,7 @@ interface AuthContextType {
     loading: boolean;
 }
 
-export const AuthContext = createContext<AuthContextType>({
+const AuthContext = createContext<AuthContextType>({
     user: null,
     signIn: async () => { throw new Error('AuthContext not initialized') },
     signInWithGoogle: async () => { throw new Error('AuthContext not initialized') },
@@ -25,7 +25,7 @@ export const AuthContext = createContext<AuthContextType>({
     loading: true
 });
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -70,10 +70,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export function useAuth() {
+function useAuth() {
     const context = useContext(AuthContext);
     if (!context) {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
-} 
+}
+
+export { AuthProvider, useAuth }; 
