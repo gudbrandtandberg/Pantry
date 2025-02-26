@@ -5,19 +5,34 @@ import { LanguageContext } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
 import ItemList from './ItemList';
+import { CheckIcon, CloudIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 export default function PantryApp() {
-    const { currentPantry } = usePantry();
+    const { currentPantry, syncStatus } = usePantry();
     const { t } = useContext(LanguageContext);
     const { signOut } = useAuth();
     const { userData } = useUser();
+
+    const getSyncStatusIcon = () => {
+        switch (syncStatus) {
+            case 'synced':
+                return <CheckIcon className="w-5 h-5 text-green-500" />;
+            case 'syncing':
+                return <CloudIcon className="w-5 h-5 text-blue-500 animate-pulse" />;
+            case 'error':
+                return <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />;
+        }
+    };
 
     if (!currentPantry) {
         return (
             <div className="max-w-4xl mx-auto">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">{t.title}</h1>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 relative">
+                        <div className="absolute right-full mr-4">
+                            {getSyncStatusIcon()}
+                        </div>
                         <span className="text-gray-600">{userData?.displayName}</span>
                         <button
                             onClick={signOut}
@@ -37,7 +52,10 @@ export default function PantryApp() {
         <div className="max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-2xl font-bold">{t.title}</h1>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 relative">
+                    <div className="absolute right-full mr-4">
+                        {getSyncStatusIcon()}
+                    </div>
                     <span className="text-gray-600">{userData?.displayName}</span>
                     <button
                         onClick={signOut}

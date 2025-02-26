@@ -37,6 +37,11 @@ interface Translations {
         moveToShoppingList: string;
         moveToInStock: string;
         customValue: string;
+        syncStatus: {
+            synced: string;
+            syncing: string;
+            error: string;
+        };
     };
 }
 
@@ -83,7 +88,12 @@ export const translations: Translations = {
         remove: 'Fjern',
         moveToShoppingList: 'Flytt til handleliste',
         moveToInStock: 'Flytt til lager',
-        customValue: 'Skriv egen verdi...'
+        customValue: 'Skriv egen verdi...',
+        syncStatus: {
+            synced: 'Synkronisert',
+            syncing: 'Synkroniserer...',
+            error: 'Synkroniseringsfeil'
+        }
     },
     'en': {
         title: 'Family Pantry',
@@ -127,7 +137,12 @@ export const translations: Translations = {
         remove: 'Remove',
         moveToShoppingList: 'Move to shopping list',
         moveToInStock: 'Move to stock',
-        customValue: 'Enter custom value...'
+        customValue: 'Enter custom value...',
+        syncStatus: {
+            synced: 'Synced',
+            syncing: 'Syncing...',
+            error: 'Sync error'
+        }
     },
     'ru': {
         title: 'Семейная Кладовая',
@@ -171,7 +186,12 @@ export const translations: Translations = {
         remove: 'Удалить',
         moveToShoppingList: 'Переместить в список покупок',
         moveToInStock: 'Переместить в наличие',
-        customValue: 'Ввести своё значение...'
+        customValue: 'Ввести своё значение...',
+        syncStatus: {
+            synced: 'Синхронизировано',
+            syncing: 'Синхронизация...',
+            error: 'Ошибка синхронизации'
+        }
     }
 };
 
