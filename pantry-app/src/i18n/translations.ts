@@ -110,18 +110,61 @@ export const translations: Translations = {
             rememberMe: 'Remember me'
         },
         signOut: 'Sign Out'
+    },
+    'ru': {
+        title: 'Семейная Кладовая',
+        inStock: 'В Наличии',
+        shoppingList: 'Список Покупок',
+        addItem: 'Добавить',
+        createPantry: 'Новая Кладовая',
+        selectPantry: 'Выберите кладовую...',
+        pantryName: 'Название Кладовой',
+        location: 'Место',
+        quantity: 'Количество',
+        unit: 'Единица (необязательно)',
+        save: 'Сохранить',
+        cancel: 'Отмена',
+        noItems: 'Список пуст',
+        delete: 'Удалить',
+        moveTo: {
+            inStock: 'Переместить в Наличие',
+            shoppingList: 'Переместить в Список Покупок'
+        },
+        emptyListMessages: [
+            'Пока ничего нет! Пора за покупками? 🛒',
+            'Пусто как в холодильнике перед выходными! 😅',
+            'Пусто как в ланч-боксе в пятницу! 🥪',
+            'Пора пополнить запасы! 🛍️'
+        ],
+        login: {
+            title: 'Вход',
+            email: 'Эл. почта',
+            password: 'Пароль',
+            submit: 'Войти',
+            error: 'Неверная почта или пароль',
+            continueWith: 'Продолжить через',
+            google: 'Google',
+            tooManyAttempts: 'Слишком много попыток. Пожалуйста, попробуйте позже.',
+            rememberMe: 'Запомнить меня'
+        },
+        signOut: 'Выйти'
     }
 };
 
-// You could add fun, family-specific locations
+// Family-specific locations with translations
 export const familyLocations = [
-    'Hjemme',
+    'Hjemme',        // Norwegian
+    'Home',          // English
+    'Дом',           // Russian
     'Hytta i Fjellet',
+    'Mountain Cabin',
+    'Горная Хижина',
     'Hytta ved Sjøen',
-    // Add your family's specific locations
+    'Beach House',
+    'Дом у Моря',
 ];
 
-// Common units in Norwegian
+// Common units in Norwegian and Russian
 export const commonUnits = [
     'stk',
     'kg',
@@ -131,5 +174,13 @@ export const commonUnits = [
     'pk',
     'boks',
     'pose',
+    'шт',    // pieces
+    'уп',    // package
+    'кг',    // kilogram
+    'г',     // gram
+    'л',     // liter
+    'мл',    // milliliter
+    'пак',   // packet
+    'банка', // jar/can
     // Add more as needed
 ]; 

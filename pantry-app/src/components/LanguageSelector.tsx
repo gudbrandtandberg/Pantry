@@ -4,6 +4,12 @@ import { LanguageContext } from '../context/LanguageContext';
 export default function LanguageSelector() {
     const { language, setLanguage } = useContext(LanguageContext);
 
+    const languages = {
+        'no': 'Norsk',
+        'en': 'English',
+        'ru': 'Русский'
+    };
+
     return (
         <select
             value={language}
@@ -12,6 +18,7 @@ export default function LanguageSelector() {
         >
             <option value="no">Norsk</option>
             <option value="en">English</option>
+            <option value="ru">Русский</option>
         </select>
     );
 } 
