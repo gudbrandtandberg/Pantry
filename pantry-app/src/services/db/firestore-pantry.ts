@@ -14,16 +14,28 @@ import { db } from './firestore';
 import { FirestorePantry, PantryService, PantryMember, PantryItem } from './types';
 
 export class FirestorePantryService implements PantryService {
-    async createPantry(pantry: Omit<FirestorePantry, 'createdAt' | 'updatedAt'>): Promise<FirestorePantry> {
-        const docRef = doc(collection(db, 'pantries'));
+    async createPantry(pantry: FirestorePantry): Promise<FirestorePantry> {
+        // Use the provided ID instead of letting Firestore generate one
+        const docRef = doc(db, 'pantries', pantry.id);
+        
+        // Ensure all required fields are present
         const newPantry: FirestorePantry = {
-            ...pantry,
             id: docRef.id,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
+            name: pantry.name,
+            location: pantry.location,
+            createdBy: pantry.createdBy,
+            createdAt: pantry.createdAt,
+            updatedAt: pantry.updatedAt,
             inStock: [],
             shoppingList: [],
-            members: pantry.members || {}
+            members: {
+                [pantry.createdBy]: {
+                    role: 'owner',
+                    addedAt: Date.now(),
+                    addedBy: pantry.createdBy
+                }
+            },
+            inviteLinks: {}  // Add this to match our data structure
         };
         
         await setDoc(docRef, newPantry);

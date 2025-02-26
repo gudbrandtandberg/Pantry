@@ -1,11 +1,12 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
-import { doc, onSnapshot, collection, query, where, select } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query, where, select, getDocs } from 'firebase/firestore';
 import { db } from '../services/db/firestore';
 import { FirestorePantry, PantryItem } from '../services/db/types';
 import { FirestorePantryService } from '../services/db/firestore-pantry';
 import { useAuth } from './AuthContext';
 import { v4 as uuidv4 } from 'uuid';
 import { debounce } from 'lodash';
+import { LanguageContext } from './LanguageContext';
 
 interface PantryError extends Error {
     code?: string;
@@ -26,6 +27,7 @@ interface PantryContextType {
     syncStatus: 'synced' | 'syncing' | 'error';
     createInviteLink: (pantryId: string, code: string) => Promise<void>;
     isOwner: (pantryId: string) => boolean;
+    joinPantryWithCode: (code: string) => Promise<void>;
 }
 
 const PantryContext = createContext<PantryContextType | null>(null);
@@ -34,6 +36,7 @@ const pantryService = new FirestorePantryService();
 
 export function PantryProvider({ children }: { children: ReactNode }) {
     const { user } = useAuth();
+    const { t } = useContext(LanguageContext);
     const [pantries, setPantries] = useState<FirestorePantry[]>([]);
     const [currentPantry, setCurrentPantry] = useState<FirestorePantry | null>(null);
     const [loading, setLoading] = useState(true);
@@ -63,7 +66,7 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         // Query pantries where user is either creator or member
         const q = query(
             collection(db, 'pantries'),
-            where(`members.${user.id}`, '!=', null)
+            where(`members.${user.id}.role`, 'in', ['owner', 'editor'])
         );
         
         const unsubscribe = onSnapshot(
@@ -98,10 +101,12 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         if (!currentPantry) return;
         
         setSyncStatus('syncing');
+        console.log('Watching pantry:', currentPantry.id, 'with data:', currentPantry);
         
         const unsubscribe = onSnapshot(
             doc(db, 'pantries', currentPantry.id),
             (doc) => {
+                console.log('Snapshot received:', doc.data());
                 if (!doc.exists()) {
                     console.warn('Pantry no longer exists:', currentPantry.id);
                     setCurrentPantry(null);
@@ -119,7 +124,7 @@ export function PantryProvider({ children }: { children: ReactNode }) {
                 setSyncStatus('synced');
             },
             (error) => {
-                console.error('Error watching pantry:', error);
+                console.error('Error watching pantry:', error, 'for pantry:', currentPantry.id);
                 setSyncStatus('error');
             }
         );
@@ -130,7 +135,10 @@ export function PantryProvider({ children }: { children: ReactNode }) {
     const savePantry = async (pantry: Omit<FirestorePantry, 'createdAt' | 'updatedAt'>) => {
         if (!user) return;
         
-        const newPantry = await pantryService.createPantry({
+        const pantryId = uuidv4();
+        
+        console.log('Creating pantry with data:', {
+            id: pantryId,
             ...pantry,
             createdBy: user.id,
             createdAt: Date.now(),
@@ -143,9 +151,29 @@ export function PantryProvider({ children }: { children: ReactNode }) {
                     addedAt: Date.now(),
                     addedBy: user.id
                 }
-            }
+            },
+            inviteLinks: {}
         });
         
+        const newPantry = await pantryService.createPantry({
+            id: pantryId,
+            ...pantry,
+            createdBy: user.id,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            inStock: [],
+            shoppingList: [],
+            members: {
+                [user.id]: {
+                    role: 'owner',
+                    addedAt: Date.now(),
+                    addedBy: user.id
+                }
+            },
+            inviteLinks: {}
+        });
+        
+        console.log('Created pantry:', newPantry);
         setCurrentPantry(newPantry);
     };
 
@@ -301,6 +329,46 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         });
     };
 
+    const joinPantryWithCode = async (code: string) => {
+        if (!user) throw new Error('Must be logged in');
+        
+        // Find pantry with this invite code
+        const pantryQuery = query(
+            collection(db, 'pantries'),
+            where(`inviteLinks.${code}.used`, '==', false)
+        );
+        
+        const querySnapshot = await getDocs(pantryQuery);
+        const pantry = querySnapshot.docs[0]?.data() as FirestorePantry | undefined;
+        
+        if (!pantry) {
+            throw new Error(t.invalidInviteLink);
+        }
+        
+        const invite = pantry.inviteLinks?.[code];
+        if (!invite) {
+            throw new Error(t.invalidInviteLink);
+        }
+        
+        if (invite.expiresAt < Date.now()) {
+            throw new Error(t.inviteLinkExpired);
+        }
+        
+        if (pantry.members[user.id]) {
+            throw new Error(t.alreadyMember);
+        }
+        
+        // Add user as member and mark invite as used
+        await pantryService.updatePantry(pantry.id, {
+            [`members.${user.id}`]: {
+                role: 'editor',
+                addedAt: Date.now(),
+                addedBy: invite.createdBy
+            },
+            [`inviteLinks.${code}.used`]: true
+        });
+    };
+
     return (
         <PantryContext.Provider value={{
             pantries,
@@ -317,6 +385,7 @@ export function PantryProvider({ children }: { children: ReactNode }) {
             syncStatus,
             createInviteLink,
             isOwner,
+            joinPantryWithCode,
         }}>
             {children}
         </PantryContext.Provider>

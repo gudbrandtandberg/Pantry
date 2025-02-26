@@ -5,14 +5,19 @@ import { UserProvider } from './context/UserContext';
 import { useAuth } from './context/AuthContext';
 import { useUser } from './context/UserContext';
 import PantryApp from './components/PantryApp';
-import LoginPage from './components/LoginPage';
+import Login from './components/Login';
 import LanguageSelector from './components/LanguageSelector';
 import LoadingSpinner from './components/LoadingSpinner';
+import JoinPantry from './components/JoinPantry';
+import Signup from './components/Signup';
+import { Routes, Route, BrowserRouter, useSearchParams } from 'react-router-dom';
 
 function AppContent() {
     const { user, loading: authLoading } = useAuth();
     const { loading: userLoading } = useUser();
     const loading = authLoading || userLoading;
+
+    const [searchParams] = useSearchParams();
 
     if (loading) {
         return (
@@ -23,7 +28,7 @@ function AppContent() {
     }
 
     if (!user) {
-        return <LoginPage />;
+        return <Login returnTo={searchParams.get('returnTo')} />;
     }
 
     return (
@@ -58,11 +63,18 @@ function UserContent() {
 
 function App() {
     return (
-        <AuthProvider>
-            <UserProvider>
-                <UserContent />
-            </UserProvider>
-        </AuthProvider>
+        <BrowserRouter>
+            <AuthProvider>
+                <UserProvider>
+                    <Routes>
+                        <Route path="/" element={<UserContent />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/signup" element={<Signup />} />
+                        <Route path="/join/:code" element={<JoinPantry />} />
+                    </Routes>
+                </UserProvider>
+            </AuthProvider>
+        </BrowserRouter>
     );
 }
 

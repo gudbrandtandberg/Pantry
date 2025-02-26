@@ -42,12 +42,12 @@ export interface FirestorePantry {
             addedBy: string;
         }
     };
-    inviteLinks?: {
+    inviteLinks: {
         [code: string]: {
             createdAt: number;
             createdBy: string;
             expiresAt: number;
-            used?: boolean;
+            used: boolean;
         }
     };
 }

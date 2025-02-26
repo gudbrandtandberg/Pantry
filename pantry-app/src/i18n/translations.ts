@@ -55,6 +55,22 @@ interface Translations {
         copy: string;
         close: string;
         onlyOwnerCanShare: string;
+        loginToJoin: string;
+        joiningPantry: string;
+        backToHome: string;
+        invalidInviteLink: string;
+        inviteLinkExpired: string;
+        alreadyMember: string;
+        signup: {
+            title: string;
+            email: string;
+            password: string;
+            submit: string;
+            loading: string;
+            error: string;
+            haveAccount: string;
+            login: string;
+        };
     };
 }
 
@@ -119,7 +135,23 @@ export const translations: Translations = {
         inviteLinkCreated: 'Invitasjonslenke opprettet! Del denne med andre:',
         copy: 'Kopier',
         close: 'Lukk',
-        onlyOwnerCanShare: 'Bare eiere kan dele matskapet'
+        onlyOwnerCanShare: 'Bare eiere kan dele matskapet',
+        loginToJoin: 'Logg inn for å bli med i matskapet',
+        joiningPantry: 'Blir med i matskap...',
+        backToHome: 'Tilbake til forsiden',
+        invalidInviteLink: 'Ugyldig invitasjonslenke',
+        inviteLinkExpired: 'Invitasjonslenken har utløpt',
+        alreadyMember: 'Du er allerede medlem av dette matskapet',
+        signup: {
+            title: 'Opprett konto',
+            email: 'E-post',
+            password: 'Passord',
+            submit: 'Opprett konto',
+            loading: 'Oppretter konto...',
+            error: 'Kunne ikke opprette konto',
+            haveAccount: 'Har du allerede en konto?',
+            login: 'Logg inn'
+        }
     },
     'en': {
         title: 'Family Pantry',
@@ -181,7 +213,23 @@ export const translations: Translations = {
         inviteLinkCreated: 'Invite link created! Share this with others:',
         copy: 'Copy',
         close: 'Close',
-        onlyOwnerCanShare: 'Only owners can share the pantry'
+        onlyOwnerCanShare: 'Only owners can share the pantry',
+        loginToJoin: 'Please log in to join the pantry',
+        joiningPantry: 'Joining pantry...',
+        backToHome: 'Back to home',
+        invalidInviteLink: 'Invalid invite link',
+        inviteLinkExpired: 'This invite link has expired',
+        alreadyMember: 'You are already a member of this pantry',
+        signup: {
+            title: 'Create Account',
+            email: 'Email',
+            password: 'Password',
+            submit: 'Sign Up',
+            loading: 'Creating account...',
+            error: 'Could not create account',
+            haveAccount: 'Already have an account?',
+            login: 'Sign In'
+        }
     },
     'ru': {
         title: 'Семейная Кладовая',
@@ -243,7 +291,23 @@ export const translations: Translations = {
         inviteLinkCreated: 'Ссылка создана! Поделитесь ею с другими:',
         copy: 'Копировать',
         close: 'Закрыть',
-        onlyOwnerCanShare: 'Только владельцы могут делиться кладовой'
+        onlyOwnerCanShare: 'Только владельцы могут делиться кладовой',
+        loginToJoin: 'Войдите, чтобы присоединиться к кладовой',
+        joiningPantry: 'Присоединение к кладовой...',
+        backToHome: 'Вернуться на главную',
+        invalidInviteLink: 'Недействительная ссылка приглашения',
+        inviteLinkExpired: 'Срок действия ссылки истек',
+        alreadyMember: 'Вы уже являетесь участником этой кладовой',
+        signup: {
+            title: 'Создать аккаунт',
+            email: 'Эл. почта',
+            password: 'Пароль',
+            submit: 'Создать аккаунт',
+            loading: 'Создание аккаунта...',
+            error: 'Не удалось создать аккаунт',
+            haveAccount: 'Уже есть аккаунт?',
+            login: 'Войти'
+        }
     }
 };
 

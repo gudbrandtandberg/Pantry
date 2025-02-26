@@ -71,45 +71,16 @@ def populate_emulator():
         'createdBy': TEST_USER_ID,
         'createdAt': int(time.time() * 1000),
         'updatedAt': int(time.time() * 1000),
-        'inStock': [
-            {
-                'id': 'item1',
-                'name': 'Milk',
-                'quantity': 2,
-                'unit': 'l',
-                'lastUpdated': int(time.time() * 1000)
-            },
-            {
-                'id': 'item2',
-                'name': 'Coffee',
-                'quantity': 1,
-                'unit': 'kg',
-                'lastUpdated': int(time.time() * 1000)
-            }
-        ],
-        'shoppingList': [
-            {
-                'id': 'item3',
-                'name': 'Bread',
-                'quantity': 1,
-                'unit': 'pcs',
-                'lastUpdated': int(time.time() * 1000)
-            },
-            {
-                'id': 'item4',
-                'name': 'Tomatoes',
-                'quantity': 6,
-                'unit': 'pcs',
-                'lastUpdated': int(time.time() * 1000)
-            }
-        ],
+        'inStock': [],
+        'shoppingList': [],
         'members': {
             TEST_USER_ID: {
                 'role': 'owner',
                 'addedAt': int(time.time() * 1000),
                 'addedBy': TEST_USER_ID
             }
-        }
+        },
+        'inviteLinks': {}
     }
     
     cabin_pantry = {
@@ -146,9 +117,56 @@ def populate_emulator():
         }
     }
     
+    shared_pantry = {
+        'id': 'pantry3',
+        'name': 'Shared Kitchen',
+        'location': 'Delt Kjøkken',
+        'createdBy': TEST_USER_ID,
+        'createdAt': int(time.time() * 1000),
+        'updatedAt': int(time.time() * 1000),
+        'inStock': [
+            {
+                'id': 'item7',
+                'name': 'Sugar',
+                'quantity': 1,
+                'unit': 'kg',
+                'lastUpdated': int(time.time() * 1000)
+            },
+            {
+                'id': 'item8',
+                'name': 'Salt',
+                'quantity': 500,
+                'unit': 'g',
+                'lastUpdated': int(time.time() * 1000)
+            }
+        ],
+        'shoppingList': [
+            {
+                'id': 'item9',
+                'name': 'Flour',
+                'quantity': 2,
+                'unit': 'kg',
+                'lastUpdated': int(time.time() * 1000)
+            }
+        ],
+        'members': {
+            TEST_USER_ID: {
+                'role': 'owner',
+                'addedAt': int(time.time() * 1000),
+                'addedBy': TEST_USER_ID
+            },
+            SECOND_USER_ID: {
+                'role': 'editor',
+                'addedAt': int(time.time() * 1000),
+                'addedBy': TEST_USER_ID
+            }
+        }
+    }
+    
     # Set the documents with specific IDs
     pantries_ref.document('pantry1').set(home_pantry)
     pantries_ref.document('pantry2').set(cabin_pantry)
+    pantries_ref.document('pantry3').set(shared_pantry)
 
     print('\nPopulation complete!')
 
