@@ -36,3 +36,6 @@ lerna-debug.log*
 
 # Git config override
 .gitconfig
+
+# Firebase config
+pantry-app/src/config/firebase.ts

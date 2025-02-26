@@ -121,9 +121,21 @@ cd pantry-app
 # Install dependencies
 npm install
 
+# Copy environment template
+cp .env.example .env
+
+# Add your Firebase configuration to .env
+
 # Start the development server
 npm run dev
 ```
+
+### Environment Setup
+
+1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com)
+2. Copy your Firebase configuration from Project Settings
+3. Create a `.env` file based on `.env.example`
+4. Add your Firebase configuration values to `.env`
 
 ### Development
 

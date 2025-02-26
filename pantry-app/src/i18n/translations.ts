@@ -19,6 +19,16 @@ interface Translations {
             shoppingList: string;
         };
         emptyListMessages: string[];
+        login: {
+            title: string;
+            email: string;
+            password: string;
+            submit: string;
+            error: string;
+            continueWith: string;
+            google: string;
+            tooManyAttempts: string;
+        };
     };
 }
 
@@ -47,7 +57,17 @@ export const translations: Translations = {
             'Tom som et norsk kjøleskap før helgen! 😅',
             'Like tomt som en matpakke på fredag! 🥪',
             'På tide å fylle opp igjen! 🛍️'
-        ]
+        ],
+        login: {
+            title: 'Logg inn',
+            email: 'E-post',
+            password: 'Passord',
+            submit: 'Logg inn',
+            error: 'Feil e-post eller passord',
+            continueWith: 'Fortsett med',
+            google: 'Google',
+            tooManyAttempts: 'For mange forsøk. Vennligst prøv igjen senere.'
+        }
     },
     'en': {
         title: 'Family Pantry',
@@ -73,7 +93,17 @@ export const translations: Translations = {
             'Empty as a Norwegian fridge before the weekend! 😅',
             'As empty as a lunchbox on Friday! 🥪',
             'Time to stock up! 🛍️'
-        ]
+        ],
+        login: {
+            title: 'Sign In',
+            email: 'Email',
+            password: 'Password',
+            submit: 'Sign In',
+            error: 'Invalid email or password',
+            continueWith: 'Continue with',
+            google: 'Google',
+            tooManyAttempts: 'Too many attempts. Please try again later.'
+        }
     }
 };
 
