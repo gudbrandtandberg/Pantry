@@ -27,7 +27,10 @@ export class FirestoreUserService implements UserService {
             return null;
         }
 
-        return docSnap.data() as UserData;
+        return {
+            id: docSnap.id,
+            ...docSnap.data()
+        } as UserData;
     }
 
     async updatePreferences(userId: string, preferences: Partial<UserPreferences>): Promise<void> {

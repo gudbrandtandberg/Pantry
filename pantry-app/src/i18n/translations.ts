@@ -71,6 +71,9 @@ interface Translations {
             haveAccount: string;
             login: string;
         };
+        members: string;
+        owner: string;
+        editor: string;
     };
 }
 
@@ -151,7 +154,10 @@ export const translations: Translations = {
             error: 'Kunne ikke opprette konto',
             haveAccount: 'Har du allerede en konto?',
             login: 'Logg inn'
-        }
+        },
+        members: 'Medlemmer',
+        owner: 'Eier',
+        editor: 'Redaktør',
     },
     'en': {
         title: 'Family Pantry',
@@ -229,7 +235,10 @@ export const translations: Translations = {
             error: 'Could not create account',
             haveAccount: 'Already have an account?',
             login: 'Sign In'
-        }
+        },
+        members: 'Members',
+        owner: 'Owner',
+        editor: 'Editor',
     },
     'ru': {
         title: 'Семейная Кладовая',
@@ -307,7 +316,10 @@ export const translations: Translations = {
             error: 'Не удалось создать аккаунт',
             haveAccount: 'Уже есть аккаунт?',
             login: 'Войти'
-        }
+        },
+        members: 'Участники',
+        owner: 'Владелец',
+        editor: 'Редактор',
     }
 };
 

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useContext } from 'react';
 import { LanguageContext } from '../context/LanguageContext';
 import { FirestorePantry } from '../services/db/types';
 import { usePantry } from '../context/PantryContext';
 import { v4 as uuidv4 } from 'uuid';
+import { FirestoreUserService, UserData } from '../services/db/firestore-user';
 
 interface SharePantryDialogProps {
     pantry: FirestorePantry;
@@ -11,12 +12,37 @@ interface SharePantryDialogProps {
     onClose: () => void;
 }
 
+const userService = new FirestoreUserService();
+
 export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePantryDialogProps) {
     const { t } = useContext(LanguageContext);
     const { createInviteLink, isOwner, loading } = usePantry();
     const [inviteLink, setInviteLink] = useState<string | null>(null);
     const [isCreatingLink, setIsCreatingLink] = useState(false);
+    const [memberData, setMemberData] = useState<Record<string, UserData>>({});
     const canShare = !loading && isOwner(pantry.id);
+
+    const members = Object.entries(pantry.members || {}).map(([userId, member]) => ({
+        userId,
+        ...member
+    }));
+
+    useEffect(() => {
+        const fetchMemberData = async () => {
+            const userData: Record<string, UserData> = {};
+            
+            for (const member of members) {
+                const user = await userService.getUser(member.userId);
+                if (user) {
+                    userData[member.userId] = user;
+                }
+            }
+            
+            setMemberData(userData);
+        };
+        
+        fetchMemberData();
+    }, [members]);
 
     if (!isOpen) return null;
 
@@ -42,12 +68,14 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
                     <p className="text-red-600 mb-4">{t.onlyOwnerCanShare}</p>
                 ) : (
                     <div className="mb-6">
-                        <h3 className="font-medium mb-2">{t.currentMembers}</h3>
+                        <h3 className="font-medium mb-2">{t.members}</h3>
                         <ul className="space-y-2">
-                            {Object.entries(pantry.members || {}).map(([userId, member]) => (
-                                <li key={userId} className="flex justify-between items-center">
-                                    <span>{userId}</span>
-                                    <span className="text-sm text-gray-500">{member.role}</span>
+                            {members.map(member => (
+                                <li key={member.userId} className="flex justify-between items-center">
+                                    <span>{memberData[member.userId]?.displayName || member.userId}</span>
+                                    <span className="text-sm text-gray-500">
+                                        {member.role === 'owner' ? t.owner : t.editor}
+                                    </span>
                                 </li>
                             ))}
                         </ul>
