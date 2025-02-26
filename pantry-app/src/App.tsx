@@ -28,18 +28,20 @@ function AppContent() {
     }
 
     if (!user) {
-        return <Login returnTo={searchParams.get('returnTo')} />;
+        return (
+            <LanguageProvider>
+                <Login returnTo={searchParams.get('returnTo')} />
+            </LanguageProvider>
+        );
     }
 
     return (
-        <PantryProvider>
-            <div className="min-h-screen bg-blue-100 p-4">
-                <div className="flex justify-end mb-4">
-                    <LanguageSelector />
-                </div>
-                <PantryApp />
+        <div className="min-h-screen bg-blue-100 p-4">
+            <div className="flex justify-end mb-4">
+                <LanguageSelector />
             </div>
-        </PantryProvider>
+            <PantryApp />
+        </div>
     );
 }
 
@@ -55,9 +57,7 @@ function UserContent() {
     }
 
     return (
-        <LanguageProvider>
-            <AppContent />
-        </LanguageProvider>
+        <AppContent />
     );
 }
 
@@ -66,12 +66,22 @@ function App() {
         <BrowserRouter>
             <AuthProvider>
                 <UserProvider>
-                    <Routes>
-                        <Route path="/" element={<UserContent />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/signup" element={<Signup />} />
-                        <Route path="/join/:code" element={<JoinPantry />} />
-                    </Routes>
+                    <LanguageProvider>
+                        <Routes>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/signup" element={<Signup />} />
+                            <Route path="/join/:code" element={
+                                <PantryProvider>
+                                    <JoinPantry />
+                                </PantryProvider>
+                            } />
+                            <Route path="/" element={
+                                <PantryProvider>
+                                    <UserContent />
+                                </PantryProvider>
+                            } />
+                        </Routes>
+                    </LanguageProvider>
                 </UserProvider>
             </AuthProvider>
         </BrowserRouter>

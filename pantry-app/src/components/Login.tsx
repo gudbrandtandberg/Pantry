@@ -13,7 +13,7 @@ export default function Login({ returnTo }: LoginProps) {
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const { login, loginWithGoogle } = useAuth();
+    const { signIn, signInWithGoogle } = useAuth();
     const { t } = useContext(LanguageContext);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -25,7 +25,7 @@ export default function Login({ returnTo }: LoginProps) {
         setLoading(true);
 
         try {
-            await login(email, password, rememberMe);
+            await signIn(email, password);
             navigate(returnPath || '/');
         } catch (err) {
             console.error('Login error:', err);
@@ -37,7 +37,7 @@ export default function Login({ returnTo }: LoginProps) {
 
     const handleGoogleLogin = async () => {
         try {
-            await loginWithGoogle();
+            await signInWithGoogle();
             navigate(returnPath || '/');
         } catch (err) {
             console.error('Google login error:', err);

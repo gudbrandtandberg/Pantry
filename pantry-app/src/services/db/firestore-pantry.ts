@@ -8,7 +8,9 @@ import {
     deleteDoc, 
     query, 
     where, 
-    writeBatch 
+    writeBatch,
+    arrayUnion,
+    arrayRemove
 } from 'firebase/firestore';
 import { db } from './firestore';
 import { FirestorePantry, PantryService, PantryMember, PantryItem } from './types';

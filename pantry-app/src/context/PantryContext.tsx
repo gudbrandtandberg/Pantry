@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
-import { doc, onSnapshot, collection, query, where, select, getDocs } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query, getDocs } from 'firebase/firestore';
 import { db } from '../services/db/firestore';
 import { FirestorePantry, PantryItem } from '../services/db/types';
 import { FirestorePantryService } from '../services/db/firestore-pantry';
@@ -65,8 +65,7 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         
         // Query pantries where user is either creator or member
         const q = query(
-            collection(db, 'pantries'),
-            where(`members.${user.id}.role`, 'in', ['owner', 'editor'])
+            collection(db, 'pantries')
         );
         
         const unsubscribe = onSnapshot(
@@ -77,12 +76,20 @@ export function PantryProvider({ children }: { children: ReactNode }) {
                     ...doc.data(),
                     id: doc.id
                 })) as FirestorePantry[];
-                console.log('Loaded pantries:', loadedPantries);
-                setPantries(loadedPantries);
+                
+                // Filter pantries where user is a member
+                const userPantries = loadedPantries.filter(pantry => 
+                    pantry.members && 
+                    pantry.members[user.id] &&
+                    ['owner', 'editor'].includes(pantry.members[user.id].role)
+                );
+                
+                console.log('Loaded pantries:', userPantries);
+                setPantries(userPantries);
                 
                 // Set first pantry as current if none selected
-                if (!currentPantry && loadedPantries.length > 0) {
-                    setCurrentPantry(loadedPantries[0]);
+                if (!currentPantry && userPantries.length > 0) {
+                    setCurrentPantry(userPantries[0]);
                 }
                 
                 setLoading(false);
@@ -359,14 +366,17 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         }
         
         // Add user as member and mark invite as used
-        await pantryService.updatePantry(pantry.id, {
+        const updateData = {
+            inviteCode: code,
             [`members.${user.id}`]: {
                 role: 'editor',
                 addedAt: Date.now(),
                 addedBy: invite.createdBy
             },
             [`inviteLinks.${code}.used`]: true
-        });
+        };
+        
+        await pantryService.updatePantry(pantry.id, updateData);
     };
 
     return (

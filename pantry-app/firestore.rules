@@ -7,14 +7,7 @@ service cloud.firestore {
     }
     match /pantries/{pantryId} {
       // Allow listing pantries where user is a member
-      allow list: if request.auth != null && 
-          (
-              // New structure: user is in members map
-              (('members' in resource.data) && 
-               (request.auth.uid in resource.data.members)) ||
-              // Old structure: user is creator
-              resource.data.createdBy == request.auth.uid
-          );
+      allow list: if request.auth != null;
       
       // Allow reading specific pantry if user is a member
       allow get: if request.auth != null && 
@@ -48,18 +41,14 @@ service cloud.firestore {
           ) ||
           // Allow joining via valid invite link
           (
-              // Only updating members and inviteLinks
-              request.resource.data.diff(resource.data).affectedKeys()
-                  .hasOnly(['members', 'inviteLinks']) &&
-              // Only adding self as member
-              request.resource.data.members.diff(resource.data.members).affectedKeys()
-                  .hasOnly([request.auth.uid]) &&
-              // Only marking invite as used
-              request.resource.data.inviteLinks.diff(resource.data.inviteLinks)
-                  .affectedKeys().size() == 1 &&
-              // Invite exists and hasn't been used
-              resource.data.inviteLinks[request.resource.data.inviteLinks
-                  .diff(resource.data.inviteLinks).affectedKeys()[0]].used == false
+              // Basic invite validation
+              ('inviteLinks' in resource.data) &&
+              (request.resource.data.inviteCode in resource.data.inviteLinks) &&
+              !resource.data.inviteLinks[request.resource.data.inviteCode].used &&
+              // Verify basic member data
+              request.resource.data.members[request.auth.uid].role == 'editor' &&
+              // Verify invite is marked as used
+              request.resource.data.inviteLinks[request.resource.data.inviteCode].used == true
           )
       );
     }

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { usePantry } from '../context/PantryContext';
 import PantrySelector from './PantrySelector';
 import { LanguageContext } from '../context/LanguageContext';
@@ -6,12 +6,14 @@ import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
 import ItemList from './ItemList';
 import { CheckIcon, CloudIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import SharePantryDialog from './SharePantryDialog';
 
 export default function PantryApp() {
-    const { currentPantry, syncStatus } = usePantry();
+    const { currentPantry, syncStatus, isOwner } = usePantry();
     const { t } = useContext(LanguageContext);
     const { signOut } = useAuth();
     const { userData } = useUser();
+    const [showShareDialog, setShowShareDialog] = useState(false);
 
     const getSyncStatusIcon = () => {
         switch (syncStatus) {
@@ -51,7 +53,7 @@ export default function PantryApp() {
     return (
         <div className="max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">{t.title}</h1>
+                <h1 className="text-2xl font-bold">{currentPantry?.name}</h1>
                 <div className="flex items-center gap-4 relative">
                     <div className="absolute right-full mr-4">
                         {getSyncStatusIcon()}
@@ -76,6 +78,14 @@ export default function PantryApp() {
                         <ItemList type="shoppingList" />
                     </div>
                 </div>
+            )}
+            
+            {currentPantry && (
+                <SharePantryDialog
+                    pantry={currentPantry}
+                    isOpen={showShareDialog}
+                    onClose={() => setShowShareDialog(false)}
+                />
             )}
         </div>
     );
