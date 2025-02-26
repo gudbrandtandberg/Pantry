@@ -5,7 +5,10 @@ import {
     signInWithEmailAndPassword,
     signInWithPopup,
     GoogleAuthProvider,
-    OAuthProvider
+    OAuthProvider,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence
 } from 'firebase/auth';
 import { AuthService, AuthUser } from './types';
 import { firebaseConfig } from '../../config/firebase';
@@ -22,7 +25,8 @@ const googleProvider = new GoogleAuthProvider();
 const microsoftProvider = new OAuthProvider('microsoft.com');
 
 export class FirebaseAuthService implements AuthService {
-    async signIn(email: string, password: string): Promise<AuthUser> {
+    async signIn(email: string, password: string, remember: boolean = false): Promise<AuthUser> {
+        await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
         const result = await signInWithEmailAndPassword(auth, email, password);
         return {
             id: result.user.uid,

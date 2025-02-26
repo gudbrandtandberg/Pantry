@@ -28,7 +28,9 @@ interface Translations {
             continueWith: string;
             google: string;
             tooManyAttempts: string;
+            rememberMe: string;
         };
+        signOut: string;
     };
 }
 
@@ -66,8 +68,10 @@ export const translations: Translations = {
             error: 'Feil e-post eller passord',
             continueWith: 'Fortsett med',
             google: 'Google',
-            tooManyAttempts: 'For mange forsøk. Vennligst prøv igjen senere.'
-        }
+            tooManyAttempts: 'For mange forsøk. Vennligst prøv igjen senere.',
+            rememberMe: 'Husk meg'
+        },
+        signOut: 'Logg ut'
     },
     'en': {
         title: 'Family Pantry',
@@ -102,8 +106,10 @@ export const translations: Translations = {
             error: 'Invalid email or password',
             continueWith: 'Continue with',
             google: 'Google',
-            tooManyAttempts: 'Too many attempts. Please try again later.'
-        }
+            tooManyAttempts: 'Too many attempts. Please try again later.',
+            rememberMe: 'Remember me'
+        },
+        signOut: 'Sign Out'
     }
 };
 

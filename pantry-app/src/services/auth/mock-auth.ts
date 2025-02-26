@@ -3,7 +3,7 @@ import { AuthService, AuthUser } from './types';
 export class MockAuthService implements AuthService {
     private currentUser: AuthUser | null = null;
 
-    async signIn(email: string, password: string): Promise<AuthUser> {
+    async signIn(email: string, password: string, remember?: boolean): Promise<AuthUser> {
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 500));
         

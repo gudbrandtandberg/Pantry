@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { LanguageContext } from '../context/LanguageContext';
 import LanguageSelector from './LanguageSelector';
 import { FirebaseError } from 'firebase/app';
+import LoadingSpinner from './LoadingSpinner';
 
 export default function LoginPage() {
     const { signIn, signInWithGoogle } = useAuth();
@@ -11,6 +12,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -18,7 +20,7 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            await signIn(email, password);
+            await signIn(email, password, rememberMe);
         } catch (err: unknown) {
             if (err instanceof FirebaseError) {
                 switch (err.code) {
@@ -104,6 +106,19 @@ export default function LoginPage() {
                         />
                     </div>
 
+                    <div className="flex items-center">
+                        <input
+                            type="checkbox"
+                            id="remember-me"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                            {t.login.rememberMe}
+                        </label>
+                    </div>
+
                     <button
                         type="submit"
                         disabled={isLoading}
@@ -113,7 +128,7 @@ export default function LoginPage() {
                                 : 'bg-blue-500 hover:bg-blue-600'
                             }`}
                     >
-                        {isLoading ? '...' : t.login.submit}
+                        {isLoading ? <LoadingSpinner /> : t.login.submit}
                     </button>
                 </form>
 
