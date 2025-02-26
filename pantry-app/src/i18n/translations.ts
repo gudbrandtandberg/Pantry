@@ -36,6 +36,7 @@ interface Translations {
         remove: string;
         moveToShoppingList: string;
         moveToInStock: string;
+        customValue: string;
     };
 }
 
@@ -81,7 +82,8 @@ export const translations: Translations = {
         add: 'Legg til',
         remove: 'Fjern',
         moveToShoppingList: 'Flytt til handleliste',
-        moveToInStock: 'Flytt til lager'
+        moveToInStock: 'Flytt til lager',
+        customValue: 'Skriv egen verdi...'
     },
     'en': {
         title: 'Family Pantry',
@@ -124,7 +126,8 @@ export const translations: Translations = {
         add: 'Add',
         remove: 'Remove',
         moveToShoppingList: 'Move to shopping list',
-        moveToInStock: 'Move to stock'
+        moveToInStock: 'Move to stock',
+        customValue: 'Enter custom value...'
     },
     'ru': {
         title: 'Семейная Кладовая',
@@ -167,40 +170,19 @@ export const translations: Translations = {
         add: 'Добавить',
         remove: 'Удалить',
         moveToShoppingList: 'Переместить в список покупок',
-        moveToInStock: 'Переместить в наличие'
+        moveToInStock: 'Переместить в наличие',
+        customValue: 'Ввести своё значение...'
     }
 };
 
-// Family-specific locations with translations
-export const familyLocations = [
-    'Hjemme',        // Norwegian
-    'Home',          // English
-    'Дом',           // Russian
-    'Hytta i Fjellet',
-    'Mountain Cabin',
-    'Горная Хижина',
-    'Hytta ved Sjøen',
-    'Beach House',
-    'Дом у Моря',
-];
+export const units = {
+    'no': ['stk', 'kg', 'g', 'l', 'dl', 'pk', 'boks', 'pose'],
+    'en': ['pcs', 'kg', 'g', 'l', 'ml', 'pkg', 'can', 'bag'],
+    'ru': ['шт', 'кг', 'г', 'л', 'мл', 'уп', 'банка', 'пакет']
+};
 
-// Common units in Norwegian and Russian
-export const commonUnits = [
-    'stk',
-    'kg',
-    'g',
-    'l',
-    'dl',
-    'pk',
-    'boks',
-    'pose',
-    'шт',    // pieces
-    'уп',    // package
-    'кг',    // kilogram
-    'г',     // gram
-    'л',     // liter
-    'мл',    // milliliter
-    'пак',   // packet
-    'банка', // jar/can
-    // Add more as needed
-]; 
+export const locations = {
+    'no': ['Hjemme', 'Hytta i Fjellet', 'Hytta ved Sjøen'],
+    'en': ['Home', 'Mountain Cabin', 'Beach House'],
+    'ru': ['Дом', 'Горная Хижина', 'Дом у Моря']
+}; 

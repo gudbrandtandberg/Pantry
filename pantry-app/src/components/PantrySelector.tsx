@@ -3,13 +3,14 @@ import { usePantry } from '../context/PantryContext';
 import { LanguageContext } from '../context/LanguageContext';
 import { FirestorePantry } from '../services/db/types';
 import { v4 as uuidv4 } from 'uuid';
-import { familyLocations } from '../i18n/translations';
+import { locations } from '../i18n/translations';
 import { useAuth } from '../context/AuthContext';
+import ComboBox from './ComboBox';
 
 export default function PantrySelector() {
     const { pantries, currentPantry, setCurrentPantry, savePantry } = usePantry();
     const { user } = useAuth();
-    const { t } = useContext(LanguageContext);
+    const { t, language } = useContext(LanguageContext);
     const [isCreating, setIsCreating] = useState(false);
     const [newPantryName, setNewPantryName] = useState('');
     const [newPantryLocation, setNewPantryLocation] = useState('');
@@ -69,16 +70,13 @@ export default function PantrySelector() {
                             onChange={(e) => setNewPantryName(e.target.value)}
                             className="px-4 py-2 border rounded-lg"
                         />
-                        <select
+                        <ComboBox
                             value={newPantryLocation}
-                            onChange={(e) => setNewPantryLocation(e.target.value)}
-                            className="px-4 py-2 border rounded-lg"
-                        >
-                            <option value="">{t.location}</option>
-                            {familyLocations.map(loc => (
-                                <option key={loc} value={loc}>{loc}</option>
-                            ))}
-                        </select>
+                            onChange={setNewPantryLocation}
+                            options={locations[language]}
+                            placeholder={t.location}
+                            className="px-4 py-2"
+                        />
                     </div>
                     <button
                         type="submit"
