@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
-import { doc, onSnapshot, collection, query, getDocs } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../services/db/firestore';
 import { FirestorePantry, PantryItem } from '../services/db/types';
 import { FirestorePantryService } from '../services/db/firestore-pantry';
