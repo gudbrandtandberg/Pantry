@@ -1,12 +1,14 @@
 import React, { useState, useContext } from 'react';
 import { usePantry } from '../context/PantryContext';
 import { LanguageContext } from '../context/LanguageContext';
-import { Pantry } from '../types';
+import { FirestorePantry } from '../services/db/types';
 import { v4 as uuidv4 } from 'uuid';
 import { familyLocations } from '../i18n/translations';
+import { useAuth } from '../context/AuthContext';
 
 export default function PantrySelector() {
     const { pantries, currentPantry, setCurrentPantry, savePantry } = usePantry();
+    const { user } = useAuth();
     const { t } = useContext(LanguageContext);
     const [isCreating, setIsCreating] = useState(false);
     const [newPantryName, setNewPantryName] = useState('');
@@ -14,12 +16,13 @@ export default function PantrySelector() {
 
     const handleCreatePantry = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newPantryName.trim()) return;
+        if (!newPantryName.trim() || !user) return;
 
-        const newPantry: Pantry = {
+        const newPantry: Omit<FirestorePantry, 'createdAt' | 'updatedAt'> = {
             id: uuidv4(),
             name: newPantryName.trim(),
             location: newPantryLocation.trim(),
+            createdBy: user.id,
             inStock: [],
             shoppingList: []
         };

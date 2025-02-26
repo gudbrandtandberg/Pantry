@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { usePantry } from '../context/PantryContext';
 import PantrySelector from './PantrySelector';
-import ProductList from './ProductList';
 import { LanguageContext } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import ItemList from './ItemList';
 
 export default function PantryApp() {
     const { currentPantry } = usePantry();
@@ -41,18 +41,12 @@ export default function PantryApp() {
             </div>
             <PantrySelector />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <ProductList 
-                    title={t.inStock}
-                    products={currentPantry.inStock} 
-                    listType="inStock" 
-                />
-                <ProductList 
-                    title={t.shoppingList}
-                    products={currentPantry.shoppingList} 
-                    listType="shoppingList" 
-                />
-            </div>
+            {currentPantry && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+                    <ItemList type="inStock" />
+                    <ItemList type="shoppingList" />
+                </div>
+            )}
         </div>
     );
 } 

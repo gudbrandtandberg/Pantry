@@ -31,13 +31,18 @@ interface Translations {
             rememberMe: string;
         };
         signOut: string;
+        itemName: string;
+        add: string;
+        remove: string;
+        moveToShoppingList: string;
+        moveToInStock: string;
     };
 }
 
 export const translations: Translations = {
     'no': {
         title: 'Familiens Matskap',  // or a fun family-specific name?
-        inStock: 'På Lager',
+        inStock: 'På lager',
         shoppingList: 'Handleliste',
         addItem: 'Legg Til',
         createPantry: 'Nytt Matskap',
@@ -45,7 +50,7 @@ export const translations: Translations = {
         pantryName: 'Navn på matskap',
         location: 'Sted',
         quantity: 'Antall',
-        unit: 'Enhet (valgfritt)',
+        unit: 'Enhet',
         save: 'Lagre',
         cancel: 'Avbryt',
         noItems: 'Ingen varer i listen',
@@ -71,7 +76,12 @@ export const translations: Translations = {
             tooManyAttempts: 'For mange forsøk. Vennligst prøv igjen senere.',
             rememberMe: 'Husk meg'
         },
-        signOut: 'Logg ut'
+        signOut: 'Logg ut',
+        itemName: 'Varenavn',
+        add: 'Legg til',
+        remove: 'Fjern',
+        moveToShoppingList: 'Flytt til handleliste',
+        moveToInStock: 'Flytt til lager'
     },
     'en': {
         title: 'Family Pantry',
@@ -83,7 +93,7 @@ export const translations: Translations = {
         pantryName: 'Pantry Name',
         location: 'Location',
         quantity: 'Quantity',
-        unit: 'Unit (optional)',
+        unit: 'Unit',
         save: 'Save',
         cancel: 'Cancel',
         noItems: 'No items in list',
@@ -109,7 +119,12 @@ export const translations: Translations = {
             tooManyAttempts: 'Too many attempts. Please try again later.',
             rememberMe: 'Remember me'
         },
-        signOut: 'Sign Out'
+        signOut: 'Sign Out',
+        itemName: 'Item name',
+        add: 'Add',
+        remove: 'Remove',
+        moveToShoppingList: 'Move to shopping list',
+        moveToInStock: 'Move to stock'
     },
     'ru': {
         title: 'Семейная Кладовая',
@@ -147,7 +162,12 @@ export const translations: Translations = {
             tooManyAttempts: 'Слишком много попыток. Пожалуйста, попробуйте позже.',
             rememberMe: 'Запомнить меня'
         },
-        signOut: 'Выйти'
+        signOut: 'Выйти',
+        itemName: 'Название товара',
+        add: 'Добавить',
+        remove: 'Удалить',
+        moveToShoppingList: 'Переместить в список покупок',
+        moveToInStock: 'Переместить в наличие'
     }
 };
 

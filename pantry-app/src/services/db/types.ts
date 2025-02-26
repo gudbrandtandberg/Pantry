@@ -18,24 +18,21 @@ export interface PantryMember {
     joinedAt: Date;
 }
 
+export interface PantryItem {
+    id: string;
+    name: string;
+    quantity?: number;
+    unit?: string;
+    lastUpdated: number;
+}
+
 export interface FirestorePantry {
     id: string;
     name: string;
     location: string;
-    inStock: Array<{
-        id: string;
-        name: string;
-        quantity?: number;
-        unit?: string;
-        lastUpdated: number;
-    }>;
-    shoppingList: Array<{
-        id: string;
-        name: string;
-        quantity?: number;
-        unit?: string;
-        lastUpdated: number;
-    }>;
+    createdBy: string;
+    inStock?: PantryItem[];
+    shoppingList?: PantryItem[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -46,6 +43,10 @@ export interface PantryService {
     getUserPantries: (userId: string) => Promise<FirestorePantry[]>;
     updatePantry: (pantryId: string, data: Partial<FirestorePantry>) => Promise<void>;
     deletePantry: (pantryId: string) => Promise<void>;
+    addItem: (pantryId: string, list: 'inStock' | 'shoppingList', item: Omit<PantryItem, 'lastUpdated'>) => Promise<void>;
+    updateItem: (pantryId: string, list: 'inStock' | 'shoppingList', item: PantryItem) => Promise<void>;
+    removeItem: (pantryId: string, list: 'inStock' | 'shoppingList', itemId: string) => Promise<void>;
+    moveItem: (pantryId: string, fromList: 'inStock' | 'shoppingList', toList: 'inStock' | 'shoppingList', itemId: string) => Promise<void>;
     addMember: (pantryId: string, member: PantryMember) => Promise<void>;
     removeMember: (pantryId: string, userId: string) => Promise<void>;
 }

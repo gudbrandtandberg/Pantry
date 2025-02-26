@@ -6,21 +6,35 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     match /pantries/{pantryId} {
-      allow read: if request.auth != null && 
-        exists(/databases/$(database)/documents/pantries/$(pantryId)/members/$(request.auth.uid));
+      // Allow listing pantries (needed for getUserPantries)
+      allow list: if request.auth != null;
       
-      allow create: if request.auth != null && 
-        request.resource.data.createdBy == request.auth.uid;
-      
-      allow update, delete: if request.auth != null && 
-        get(/databases/$(database)/documents/pantries/$(pantryId)/members/$(request.auth.uid)).data.role in ['owner', 'editor'];
-      
-      match /members/{memberId} {
-        allow read: if request.auth != null && 
+      // Allow reading specific pantry if user is a member
+      allow get: if request.auth != null && 
           exists(/databases/$(database)/documents/pantries/$(pantryId)/members/$(request.auth.uid));
+      
+      // Allow creating new pantries (we'll add member in the same transaction)
+      allow create: if request.auth != null && 
+          request.resource.data.createdBy == request.auth.uid;
+      
+      // Allow updates and deletes for owners and editors
+      allow update, delete: if request.auth != null && 
+          get(/databases/$(database)/documents/pantries/$(pantryId)/members/$(request.auth.uid)).data.role in ['owner', 'editor'];
+
+      match /members/{memberId} {
+        // Allow reading member list if user is a member
+        allow list, get: if request.auth != null && 
+            exists(/databases/$(database)/documents/pantries/$(pantryId)/members/$(request.auth.uid));
         
-        allow write: if request.auth != null && 
-          get(/databases/$(database)/documents/pantries/$(pantryId)/members/$(request.auth.uid)).data.role == 'owner';
+        // Allow member management
+        allow write: if request.auth != null && (
+            // Allow initial member creation by creator
+            (!exists(/databases/$(database)/documents/pantries/$(pantryId)/members/*) && 
+             request.resource.data.role == 'owner' && 
+             request.resource.data.userId == request.auth.uid) ||
+            // Allow member management by owners
+            get(/databases/$(database)/documents/pantries/$(pantryId)/members/$(request.auth.uid)).data.role == 'owner'
+        );
       }
     }
   }
