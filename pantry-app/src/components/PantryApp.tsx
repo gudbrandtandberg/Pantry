@@ -7,6 +7,7 @@ import { useUser } from '../context/UserContext';
 import ItemList from './ItemList';
 import { CheckIcon, CloudIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import SharePantryDialog from './SharePantryDialog';
+import Footer from './Footer';
 
 export default function PantryApp() {
     const { currentPantry, syncStatus, isOwner } = usePantry();
@@ -87,6 +88,7 @@ export default function PantryApp() {
                     onClose={() => setShowShareDialog(false)}
                 />
             )}
+            <Footer />
         </div>
     );
 } 
