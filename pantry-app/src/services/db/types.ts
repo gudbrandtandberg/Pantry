@@ -31,10 +31,25 @@ export interface FirestorePantry {
     name: string;
     location: string;
     createdBy: string;
-    inStock?: PantryItem[];
-    shoppingList?: PantryItem[];
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: number;
+    updatedAt: number;
+    inStock: PantryItem[];
+    shoppingList: PantryItem[];
+    members: {
+        [userId: string]: {
+            role: 'owner' | 'editor';
+            addedAt: number;
+            addedBy: string;
+        }
+    };
+    inviteLinks?: {
+        [code: string]: {
+            createdAt: number;
+            createdBy: string;
+            expiresAt: number;
+            used?: boolean;
+        }
+    };
 }
 
 export interface PantryService {

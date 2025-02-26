@@ -8,33 +8,25 @@ import {
     deleteDoc, 
     query, 
     where, 
-    arrayUnion, 
-    arrayRemove 
+    writeBatch 
 } from 'firebase/firestore';
 import { db } from './firestore';
 import { FirestorePantry, PantryService, PantryMember, PantryItem } from './types';
 
 export class FirestorePantryService implements PantryService {
     async createPantry(pantry: Omit<FirestorePantry, 'createdAt' | 'updatedAt'>): Promise<FirestorePantry> {
-        const now = new Date();
+        const docRef = doc(collection(db, 'pantries'));
         const newPantry: FirestorePantry = {
             ...pantry,
+            id: docRef.id,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
             inStock: [],
             shoppingList: [],
-            createdAt: now,
-            updatedAt: now
+            members: pantry.members || {}
         };
-
-        // Create the pantry document
-        await setDoc(doc(db, 'pantries', pantry.id), newPantry);
-
-        // Add creator as owner
-        await this.addMember(pantry.id, {
-            userId: pantry.createdBy,
-            role: 'owner',
-            joinedAt: now
-        });
-
+        
+        await setDoc(docRef, newPantry);
         return newPantry;
     }
 
@@ -200,5 +192,30 @@ export class FirestorePantryService implements PantryService {
                 updatedAt: new Date()
             });
         }
+    }
+
+    async migrateOldPantries(userId: string): Promise<void> {
+        const pantryCollection = collection(db, 'pantries');
+        const q = query(pantryCollection, where('createdBy', '==', userId));
+        const querySnapshot = await getDocs(q);
+
+        const batch = writeBatch(db);
+        
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (!data.members) {
+                batch.update(doc.ref, {
+                    members: {
+                        [userId]: {
+                            role: 'owner',
+                            addedAt: data.createdAt || Date.now(),
+                            addedBy: userId
+                        }
+                    }
+                });
+            }
+        });
+
+        await batch.commit();
     }
 } 

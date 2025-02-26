@@ -42,6 +42,19 @@ interface Translations {
             syncing: string;
             error: string;
         };
+        deletePantryTitle: string;
+        deletePantryConfirm: string;
+        deletePantryPlaceholder: string;
+        deleting: string;
+        share: string;
+        sharePantryTitle: string;
+        currentMembers: string;
+        createInviteLink: string;
+        creatingLink: string;
+        inviteLinkCreated: string;
+        copy: string;
+        close: string;
+        onlyOwnerCanShare: string;
     };
 }
 
@@ -93,7 +106,20 @@ export const translations: Translations = {
             synced: 'Synkronisert',
             syncing: 'Synkroniserer...',
             error: 'Synkroniseringsfeil'
-        }
+        },
+        deletePantryTitle: 'Slett matskap',
+        deletePantryConfirm: 'Er du sikker på at du vil slette "{name}"? Dette kan ikke angres. Skriv inn navnet på matskapet for å bekrefte.',
+        deletePantryPlaceholder: 'Skriv matskap navn her',
+        deleting: 'Sletter...',
+        share: 'Del',
+        sharePantryTitle: 'Del matskap',
+        currentMembers: 'Nåværende medlemmer',
+        createInviteLink: 'Lag invitasjonslenke',
+        creatingLink: 'Lager lenke...',
+        inviteLinkCreated: 'Invitasjonslenke opprettet! Del denne med andre:',
+        copy: 'Kopier',
+        close: 'Lukk',
+        onlyOwnerCanShare: 'Bare eiere kan dele matskapet'
     },
     'en': {
         title: 'Family Pantry',
@@ -142,7 +168,20 @@ export const translations: Translations = {
             synced: 'Synced',
             syncing: 'Syncing...',
             error: 'Sync error'
-        }
+        },
+        deletePantryTitle: 'Delete Pantry',
+        deletePantryConfirm: 'Are you sure you want to delete "{name}"? This cannot be undone. Type the pantry name to confirm.',
+        deletePantryPlaceholder: 'Type pantry name here',
+        deleting: 'Deleting...',
+        share: 'Share',
+        sharePantryTitle: 'Share Pantry',
+        currentMembers: 'Current Members',
+        createInviteLink: 'Create Invite Link',
+        creatingLink: 'Creating link...',
+        inviteLinkCreated: 'Invite link created! Share this with others:',
+        copy: 'Copy',
+        close: 'Close',
+        onlyOwnerCanShare: 'Only owners can share the pantry'
     },
     'ru': {
         title: 'Семейная Кладовая',
@@ -191,7 +230,20 @@ export const translations: Translations = {
             synced: 'Синхронизировано',
             syncing: 'Синхронизация...',
             error: 'Ошибка синхронизации'
-        }
+        },
+        deletePantryTitle: 'Удалить кладовую',
+        deletePantryConfirm: 'Вы уверены, что хотите удалить "{name}"? Это действие нельзя отменить. Введите название кладовой для подтверждения.',
+        deletePantryPlaceholder: 'Введите название кладовой',
+        deleting: 'Удаление...',
+        share: 'Поделиться',
+        sharePantryTitle: 'Поделиться кладовой',
+        currentMembers: 'Текущие участники',
+        createInviteLink: 'Создать ссылку-приглашение',
+        creatingLink: 'Создание ссылки...',
+        inviteLinkCreated: 'Ссылка создана! Поделитесь ею с другими:',
+        copy: 'Копировать',
+        close: 'Закрыть',
+        onlyOwnerCanShare: 'Только владельцы могут делиться кладовой'
     }
 };
 

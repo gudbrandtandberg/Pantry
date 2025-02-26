@@ -24,6 +24,8 @@ interface PantryContextType {
     loading: boolean;
     error: PantryError | null;
     syncStatus: 'synced' | 'syncing' | 'error';
+    createInviteLink: (pantryId: string, code: string) => Promise<void>;
+    isOwner: (pantryId: string) => boolean;
 }
 
 const PantryContext = createContext<PantryContextType | null>(null);
@@ -47,17 +49,32 @@ export function PantryProvider({ children }: { children: ReactNode }) {
             return;
         }
         
+        // Run migration for old pantries
+        const migratePantries = async () => {
+            try {
+                await pantryService.migrateOldPantries(user.id);
+            } catch (err) {
+                console.error('Error migrating pantries:', err);
+            }
+        };
+        
+        migratePantries();
+        
+        // Query pantries where user is either creator or member
         const q = query(
             collection(db, 'pantries'),
-            where('members', 'array-contains', user.id),
-            select(['id', 'name', 'location', 'createdBy'])
+            where(`members.${user.id}`, '!=', null)
         );
         
         const unsubscribe = onSnapshot(
             q,
             { includeMetadataChanges: false },
             (snapshot) => {
-                const loadedPantries = snapshot.docs.map(doc => doc.data() as FirestorePantry);
+                const loadedPantries = snapshot.docs.map(doc => ({
+                    ...doc.data(),
+                    id: doc.id
+                })) as FirestorePantry[];
+                console.log('Loaded pantries:', loadedPantries);
                 setPantries(loadedPantries);
                 
                 // Set first pantry as current if none selected
@@ -115,11 +132,20 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         
         const newPantry = await pantryService.createPantry({
             ...pantry,
-            createdBy: user.id
+            createdBy: user.id,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            inStock: [],
+            shoppingList: [],
+            members: {
+                [user.id]: {
+                    role: 'owner',
+                    addedAt: Date.now(),
+                    addedBy: user.id
+                }
+            }
         });
         
-        const updatedPantries = await pantryService.getUserPantries(user.id);
-        setPantries(updatedPantries);
         setCurrentPantry(newPantry);
     };
 
@@ -251,6 +277,30 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         []
     );
 
+    const isOwner = (pantryId: string) => {
+        const pantry = pantries.find(p => p.id === pantryId);
+        return pantry?.members && user?.id ? pantry.members[user.id]?.role === 'owner' : false;
+    };
+
+    const createInviteLink = async (pantryId: string, code: string) => {
+        if (!user || !isOwner(pantryId)) {
+            throw new Error('Unauthorized');
+        }
+
+        const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days
+        
+        await pantryService.updatePantry(pantryId, {
+            inviteLinks: {
+                [code]: {
+                    createdAt: Date.now(),
+                    createdBy: user.id,
+                    expiresAt,
+                    used: false
+                }
+            }
+        });
+    };
+
     return (
         <PantryContext.Provider value={{
             pantries,
@@ -264,7 +314,9 @@ export function PantryProvider({ children }: { children: ReactNode }) {
             moveItem,
             loading,
             error,
-            syncStatus
+            syncStatus,
+            createInviteLink,
+            isOwner,
         }}>
             {children}
         </PantryContext.Provider>
