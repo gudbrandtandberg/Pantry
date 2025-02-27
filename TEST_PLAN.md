@@ -3,6 +3,7 @@
 ## 1. Authentication
 
 ### Sign Up
+
 - [ ] Create account with email/password
 - [ ] Validate email format requirements
 - [ ] Validate password requirements
@@ -11,6 +12,7 @@
 - [ ] Test error handling for duplicate emails
 
 ### Sign In
+
 - [ ] Sign in with email/password
 - [ ] Sign in with Google
 - [ ] Test "Remember me" functionality
@@ -19,6 +21,7 @@
 - [ ] Verify redirect after successful login
 
 ### Sign Out
+
 - [ ] Verify sign out works
 - [ ] Check redirect after sign out
 - [ ] Verify protected routes are inaccessible after logout
@@ -26,6 +29,7 @@
 ## 2. Pantry Management
 
 ### Create Pantry
+
 - [ ] Create new pantry with name
 - [ ] Create pantry with location
 - [ ] Verify user becomes owner
@@ -42,6 +46,7 @@
 ## 3. Item Management
 
 ### Add Items
+
 - [ ] Add item to In Stock
 - [ ] Add item to Shopping List
 - [ ] Test quantity field
@@ -64,6 +69,7 @@
 - [ ] Test multiple moves rapidly
 
 ### Delete Items
+
 - [ ] Delete from In Stock
 - [ ] Delete from Shopping List
 - [ ] Verify immediate removal
@@ -130,5 +136,4 @@
 - Document any bugs found
 - Note any UI/UX improvements needed
 - Track performance issues
-- List any missing features discovered during testing 
-
+- List any missing features discovered during testing
