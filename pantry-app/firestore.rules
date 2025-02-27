@@ -2,57 +2,37 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId} {
-      // Allow reading any user's basic info, but only write your own
-      allow get: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
     }
+    
+    function isOwner(pantryId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/pantries/$(pantryId)) &&
+        get(/databases/$(database)/documents/pantries/$(pantryId)).data.members[request.auth.uid].role == 'owner';
+    }
+
+    // User rules
+    match /users/{userId} {
+      allow read: if isSignedIn();  // Allow reading any user's info
+      allow create: if isSignedIn() && (request.auth.uid == userId);
+      allow update: if isSignedIn() && (request.auth.uid == userId);
+    }
+
+    // Invite rules
+    match /invites/{inviteId} {
+      allow read: if true;  // Anyone can validate an invite code
+      allow create: if isSignedIn();  // Any signed in user can create invites
+    }
+
+    // Pantry rules
     match /pantries/{pantryId} {
-      // Allow listing pantries where user is a member
-      allow list: if request.auth != null;
-      
-      // Allow reading specific pantry if user is a member
-      allow get: if request.auth != null && 
-          (
-              // Check if user is member
-              (('members' in resource.data) && 
-               (request.auth.uid in resource.data.members)) ||
-              // Or if user is creator
-              resource.data.createdBy == request.auth.uid
-          );
-      
-      // Allow creating new pantries
-      allow create: if request.auth != null && 
-          request.resource.data.createdBy == request.auth.uid &&
-          ('members' in request.resource.data) &&
-          request.resource.data.members[request.auth.uid].role == 'owner';
-      
-      // Allow updates and deletes for owners and editors
-      allow update, delete: if request.auth != null && (
-          (
-              // New structure: user is owner/editor
-              (('members' in resource.data) && 
-               (request.auth.uid in resource.data.members) &&
-               resource.data.members[request.auth.uid].role in ['owner', 'editor']) ||
-              // Old structure: user is creator
-              resource.data.createdBy == request.auth.uid ||
-              // Migration update
-              (('members' in request.resource.data) &&
-               request.resource.data.members[request.auth.uid].role == 'owner' &&
-               resource.data.createdBy == request.auth.uid)
-          ) ||
-          // Allow joining via valid invite link
-          (
-              // Basic invite validation
-              ('inviteLinks' in resource.data) &&
-              (request.resource.data.inviteCode in resource.data.inviteLinks) &&
-              !resource.data.inviteLinks[request.resource.data.inviteCode].used &&
-              // Verify basic member data
-              request.resource.data.members[request.auth.uid].role == 'editor' &&
-              // Verify invite is marked as used
-              request.resource.data.inviteLinks[request.resource.data.inviteCode].used == true
-          )
+      allow read: if isSignedIn();  // Allow reading all pantries for listing
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && (
+        resource.data.members[request.auth.uid].role in ['owner', 'editor']
       );
+      allow delete: if isOwner(pantryId);
     }
   }
 } 

@@ -58,6 +58,9 @@ export default function PantryApp() {
         <div className="min-h-screen bg-blue-100 p-4">
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-4">
+                    <h1 className="text-2xl font-bold">
+                        {currentPantry?.name || t.title}
+                    </h1>
                     <LanguageSelector />
                 </div>
                 <UserMenu />
