@@ -41,7 +41,9 @@ export default [
             'no-unused-vars': 'off',
             '@typescript-eslint/no-unused-vars': ['error', {
                 'argsIgnorePattern': '^_',
-                'varsIgnorePattern': '^_'
+                'varsIgnorePattern': '^_',
+                'ignoreRestSiblings': true,
+                'args': 'all'
             }],
             'no-console': 'warn',
             'react/prop-types': 'off',
