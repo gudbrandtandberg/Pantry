@@ -12,26 +12,29 @@ export default function JoinPantry() {
     const { t } = useContext(LanguageContext);
     const navigate = useNavigate();
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [isJoining, setIsJoining] = useState(false);
+    const [hasAttempted, setHasAttempted] = useState(false);
 
     useEffect(() => {
-        const handleJoinPantry = async () => {
-            if (!user || !code) return;
-            
-            try {
-                await joinPantryWithCode(code);
-                navigate('/');
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Unknown error');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (code) {
-            handleJoinPantry();
+        if (isJoining || hasAttempted) return;  // Don't retry if we've already attempted
+        if (!code) {
+            setError(t.invalidInviteLink);
+            return;
         }
-    }, [code, joinPantryWithCode, navigate, user]);
+
+        setIsJoining(true);
+        joinPantryWithCode(code)
+            .then(() => {
+                navigate('/');
+            })
+            .catch((err) => {
+                setError(err.message);
+            })
+            .finally(() => {
+                setIsJoining(false);
+                setHasAttempted(true);
+            });
+    }, [code, joinPantryWithCode, navigate, t, isJoining, hasAttempted]);
 
     if (!user) {
         return (
@@ -53,14 +56,6 @@ export default function JoinPantry() {
                         </button>
                     </div>
                 </div>
-            </div>
-        );
-    }
-
-    if (loading) {
-        return (
-            <div className="p-4">
-                <p>{t.joiningPantry}</p>
             </div>
         );
     }

@@ -29,27 +29,26 @@ function App() {
     return (
         <BrowserRouter>
             <AuthProvider>
-                <Routes>
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/login/:inviteCode" element={<LoginPage />} />
-                    <Route 
-                        path="/*" 
-                        element={
-                            <ProtectedRoute>
-                                <UserProvider>
-                                    <LanguageProvider>
-                                        <PantryProvider>
+                <PantryProvider>
+                    <Routes>
+                        <Route path="/login/:inviteCode?" element={<LoginPage />} />
+                        <Route path="/join/:code" element={<JoinPantry />} />
+                        <Route 
+                            path="/*" 
+                            element={
+                                <ProtectedRoute>
+                                    <UserProvider>
+                                        <LanguageProvider>
                                             <Routes>
-                                                <Route path="/join/:code" element={<JoinPantry />} />
                                                 <Route path="/" element={<PantryApp />} />
                                             </Routes>
-                                        </PantryProvider>
-                                    </LanguageProvider>
-                                </UserProvider>
-                            </ProtectedRoute>
-                        } 
-                    />
-                </Routes>
+                                        </LanguageProvider>
+                                    </UserProvider>
+                                </ProtectedRoute>
+                            } 
+                        />
+                    </Routes>
+                </PantryProvider>
             </AuthProvider>
         </BrowserRouter>
     );

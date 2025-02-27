@@ -80,12 +80,9 @@ export class FirestorePantryService implements PantryService {
         return pantries;
     }
 
-    async updatePantry(pantryId: string, data: Partial<FirestorePantry>): Promise<void> {
-        const docRef = doc(db, 'pantries', pantryId);
-        await updateDoc(docRef, {
-            ...data,
-            updatedAt: new Date()
-        });
+    async updatePantry(id: string, data: Partial<FirestorePantry>): Promise<void> {
+        const docRef = doc(db, 'pantries', id);
+        await updateDoc(docRef, data);
     }
 
     async deletePantry(pantryId: string): Promise<void> {
@@ -217,5 +214,15 @@ export class FirestorePantryService implements PantryService {
         });
 
         await batch.commit();
+    }
+
+    async createInviteLink(pantryId: string, code: string): Promise<void> {
+        const docRef = doc(db, 'pantries', pantryId);
+        await updateDoc(docRef, {
+            [`inviteLinks.${code}`]: {
+                createdAt: Date.now(),
+                used: false
+            }
+        });
     }
 } 

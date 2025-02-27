@@ -8,6 +8,7 @@ import { usePantry } from '../context/PantryContext';
 import { v4 as uuidv4 } from 'uuid';
 import { FirestoreUserService } from '../services/db/firestore-user';
 import { UserData } from '../services/db/types';
+import { FirestorePantryService } from '../services/db/firestore-pantry';
 
 interface SharePantryDialogProps {
     pantry: FirestorePantry;
@@ -16,6 +17,7 @@ interface SharePantryDialogProps {
 }
 
 const userService = new FirestoreUserService();
+const pantryService = new FirestorePantryService();
 
 export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePantryDialogProps) {
     const { t } = useContext(LanguageContext);
@@ -76,18 +78,7 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
         setIsCreatingLink(true);
         try {
             const code = uuidv4().slice(0, 8);
-            const updatedPantry = {
-                ...pantry,
-                inviteLinks: {
-                    ...pantry.inviteLinks,
-                    [code]: {
-                        createdAt: Date.now(),
-                        used: false
-                    }
-                }
-            };
-
-            await savePantry(updatedPantry);
+            await pantryService.createInviteLink(pantry.id, code);
             setInviteLink(`${window.location.origin}/login/${code}`);
         } finally {
             setIsCreatingLink(false);

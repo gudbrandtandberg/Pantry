@@ -1,11 +1,12 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { doc, onSnapshot, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query, where, getDocs, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '../services/db/firestore';
 import { FirestorePantry, PantryItem } from '../services/db/types';
 import { FirestorePantryService } from '../services/db/firestore-pantry';
 import { useAuth } from './AuthContext';
 import { v4 as uuidv4 } from 'uuid';
 import { LanguageContext } from './LanguageContext';
+import { auth } from '../services/auth/firebase-auth';
 
 interface PantryError extends Error {
     code?: string;
@@ -317,39 +318,91 @@ export function PantryProvider({ children }: { children: ReactNode }) {
     const joinPantryWithCode = async (code: string) => {
         if (!user) throw new Error('Must be logged in');
         
-        // Find pantry with this invite code
+        const currentUser = auth.currentUser;
+        if (!currentUser) throw new Error('Must be logged in');
+        const userId = currentUser.uid;
+        
+        console.log('Attempting to join pantry with code:', code);
+        console.log('Current user ID:', userId);
+        
         const pantryQuery = query(
             collection(db, 'pantries'),
-            where(`inviteLinks.${code}.used`, '==', false)
+            where(`inviteLinks.${code}`, '!=', null)
         );
         
         const querySnapshot = await getDocs(pantryQuery);
-        const pantry = querySnapshot.docs[0]?.data() as FirestorePantry | undefined;
-        
-        if (!pantry) {
+        const pantryDoc = querySnapshot.docs[0];
+        if (!pantryDoc) {
+            console.log('No pantry found with code');
             throw new Error(t.invalidInviteLink);
         }
+        
+        const pantry = { id: pantryDoc.id, ...pantryDoc.data() } as FirestorePantry;
+        console.log('Found pantry:', {
+            id: pantry.id,
+            members: pantry.members,
+            inviteLinks: pantry.inviteLinks
+        });
         
         const invite = pantry.inviteLinks?.[code];
+        console.log('Found invite:', invite);
         if (!invite) {
+            console.log('No invite found with code in pantry');
             throw new Error(t.invalidInviteLink);
         }
         
-        if (pantry.members[user.id]) {
+        if (pantry.members?.[userId]) {
+            console.log('User already a member');
             throw new Error(t.alreadyMember);
         }
         
-        // Update member data
-        const updateData: Partial<FirestorePantry> = {
-            [`members.${user.id}`]: {
-                role: 'editor',
-                addedAt: Date.now(),
-                addedBy: user.id
-            },
-            [`inviteLinks.${code}.used`]: true
-        };
+        console.log('Updating pantry with new member:', userId);
         
-        await pantryService.updatePantry(pantry.id, updateData);
+        try {
+            const pantryRef = doc(db, 'pantries', pantry.id);
+            
+            // Do the update in two steps
+            // 1. First ensure members object exists
+            if (!pantry.members) {
+                console.log('Creating members object...');
+                await updateDoc(pantryRef, {
+                    members: {},
+                    inviteCode: code
+                });
+                console.log('Members object created');
+            }
+            
+            // 2. Then add the new member
+            console.log('Adding member with data:', {
+                [`members.${userId}`]: {
+                    role: 'editor',
+                    addedAt: Date.now(),
+                    addedBy: userId
+                },
+                inviteCode: code
+            });
+            
+            await updateDoc(pantryRef, {
+                [`members.${userId}`]: {
+                    role: 'editor',
+                    addedAt: Date.now(),
+                    addedBy: userId
+                },
+                inviteCode: code
+            });
+            
+            console.log('Successfully joined pantry');
+        } catch (error) {
+            console.error('Failed to join pantry:', error);
+            if (error instanceof Error) {
+                console.error('Error details:', {
+                    message: error.message,
+                    name: error.name,
+                    stack: error.stack
+                });
+            }
+            throw error;
+        }
     };
 
     return (

@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LanguageContext } from '../context/LanguageContext';
 import LanguageSelector from './LanguageSelector';
@@ -6,6 +6,7 @@ import { FirebaseError } from 'firebase/app';
 import LoadingSpinner from './LoadingSpinner';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FirestoreUserService } from '../services/db/firestore-user';
+import { usePantry } from '../context/PantryContext';
 
 const userService = new FirestoreUserService();
 
@@ -21,6 +22,13 @@ export default function LoginPage() {
     const [rememberMe, setRememberMe] = useState(false);
     const { inviteCode } = useParams();
     const navigate = useNavigate();
+    const { joinPantryWithCode } = usePantry();
+
+    useEffect(() => {
+        if (inviteCode) {
+            console.log('Processing invite code:', inviteCode);
+        }
+    }, [inviteCode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,21 +41,23 @@ export default function LoginPage() {
                     setError(t.signup.nameRequired);
                     return;
                 }
-                console.log('Starting signup process...');
                 const user = await signUp(email, password);
-                console.log('Auth signup successful:', user);
                 if (!user) {
                     throw new Error('Failed to create account');
                 }
-                console.log('Creating user document...');
                 await userService.createUser({
                     id: user.id,
                     email: user.email,
                     displayName: name.trim()
                 });
-                console.log('User document created');
                 if (inviteCode) {
-                    navigate(`/join/${inviteCode}`);
+                    try {
+                        await joinPantryWithCode(inviteCode);
+                        navigate('/');
+                    } catch (err) {
+                        console.error('Failed to join pantry:', err);
+                        setError(err.message);
+                    }
                 } else {
                     navigate('/');
                 }
