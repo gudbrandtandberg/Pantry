@@ -1,5 +1,5 @@
 export const version = {
-    number: 'v0.2.0',  // Major feature: invite-only system
+    number: 'v0.3.0',
     year: '2025',
     company: 'Duff Development'
 }; 
