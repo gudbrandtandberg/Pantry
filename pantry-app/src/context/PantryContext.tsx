@@ -402,7 +402,18 @@ export function PantryProvider({ children }: { children: ReactNode }) {
                 } as FirestorePantry;
                 
                 // Add to pantries list
-                setPantries(prev => [...prev, updatedPantry]);
+                setPantries(prev => {
+                    // Check if pantry already exists in list
+                    const exists = prev.some(p => p.id === updatedPantry.id);
+                    if (exists) {
+                        // Update existing pantry
+                        return prev.map(p => 
+                            p.id === updatedPantry.id ? updatedPantry : p
+                        );
+                    }
+                    // Add new pantry
+                    return [...prev, updatedPantry];
+                });
                 
                 // Set as current pantry
                 setCurrentPantry(updatedPantry);

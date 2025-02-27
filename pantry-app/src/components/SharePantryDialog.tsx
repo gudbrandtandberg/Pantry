@@ -26,7 +26,7 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
     const [inviteLink, setInviteLink] = useState<string | null>(null);
     const [isCreatingLink, setIsCreatingLink] = useState(false);
     const [memberData, setMemberData] = useState<Record<string, UserData>>({});
-    const canShare = !loading && !authLoading && isOwner(pantry.id);
+    const [showOwnerError, setShowOwnerError] = useState(false);
 
     const members = Object.entries(pantry.members || {}).map(([userId, member]) => ({
         userId,
@@ -74,12 +74,18 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
         };
     }, [members, authLoading, user, onClose]);
 
-    const handleCreateInvite = async () => {
+    const handleCreateInviteLink = async () => {
+        if (!isOwner(pantry.id)) {
+            setShowOwnerError(true);
+            return;
+        }
         setIsCreatingLink(true);
         try {
             const code = uuidv4().slice(0, 8);
             await pantryService.createInviteLink(pantry.id, code);
             setInviteLink(`${window.location.origin}/login/${code}`);
+        } catch (error) {
+            console.error('Failed to create invite link:', error);
         } finally {
             setIsCreatingLink(false);
         }
@@ -93,25 +99,25 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
                 <div className="bg-white rounded-lg p-6 max-w-md w-full">
                     <h2 className="text-xl font-bold mb-4">{t.sharePantryTitle}</h2>
                     
-                    {loading ? (
-                        <p className="text-gray-600">{t.loading}</p>
-                    ) : !canShare ? (
-                        <p className="text-red-600 mb-4">{t.onlyOwnerCanShare}</p>
-                    ) : (
-                        <div className="mb-6">
-                            <h3 className="font-medium mb-2">{t.members}</h3>
-                            <ul className="space-y-2">
-                                {members.map(member => (
-                                    <li key={member.userId} className="flex justify-between items-center">
-                                        <span>{memberData[member.userId]?.displayName || member.userId}</span>
-                                        <span className="text-sm text-gray-500">
-                                            {member.role === 'owner' ? t.owner : t.editor}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
+                    {showOwnerError && (
+                        <div className="text-red-600 mb-4">
+                            {t.onlyOwnerCanShare}
                         </div>
                     )}
+
+                    <div className="mb-6">
+                        <h3 className="font-medium mb-2">{t.currentMembers}</h3>
+                        <ul className="space-y-2">
+                            {members.map(member => (
+                                <li key={member.userId} className="flex justify-between items-center">
+                                    <span>{memberData[member.userId]?.displayName || member.userId}</span>
+                                    <span className="text-sm text-gray-500">
+                                        {member.role === 'owner' ? t.owner : t.editor}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
                     <div className="space-y-4">
                         {inviteLink ? (
@@ -134,7 +140,7 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
                             </div>
                         ) : (
                             <button
-                                onClick={handleCreateInvite}
+                                onClick={handleCreateInviteLink}
                                 disabled={isCreatingLink}
                                 className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
                             >

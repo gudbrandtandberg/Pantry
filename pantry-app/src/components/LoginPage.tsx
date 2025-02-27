@@ -46,6 +46,7 @@ export default function LoginPage() {
                 if (!user) {
                     throw new Error('Failed to create account');
                 }
+                
                 await userService.createUser({
                     id: user.id,
                     email: user.email,
@@ -54,8 +55,9 @@ export default function LoginPage() {
 
                 if (inviteCode) {
                     await new Promise<void>((resolve) => {
-                        const unsubscribe = auth.onAuthStateChanged((user) => {
+                        const unsubscribe = auth.onAuthStateChanged(async (user) => {
                             if (user) {
+                                await new Promise(r => setTimeout(r, 500));
                                 unsubscribe();
                                 resolve();
                             }
