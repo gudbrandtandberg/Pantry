@@ -31,21 +31,9 @@ export default function PantryApp() {
                 <div className="max-w-4xl mx-auto">
                     <div className="flex justify-between items-center mb-4">
                         <h1 className="text-2xl font-bold">{t.title}</h1>
-                        <div className="flex items-center gap-4 relative">
-                            <div className="absolute right-full mr-4">
-                                {syncStatus === 'synced' ? <CheckIcon className="w-5 h-5 text-green-500" /> : syncStatus === 'syncing' ? <CloudIcon className="w-5 h-5 text-blue-500 animate-pulse" /> : <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />}
-                            </div>
-                            <span className="text-gray-600">{userData?.displayName}</span>
-                            <button
-                                onClick={signOut}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md"
-                            >
-                                {t.signOut}
-                            </button>
-                        </div>
+                        <UserMenu />
                     </div>
                     <PantrySelector />
-                    <p className="text-gray-600 mt-4">{t.selectPantry}</p>
                 </div>
             </div>
         );
@@ -54,9 +42,14 @@ export default function PantryApp() {
     return (
         <div className="min-h-screen bg-blue-100 p-4">
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">
-                    {currentPantry?.name || t.title}
-                </h1>
+                <div>
+                    <h1 className="text-2xl font-bold">{t.title}</h1>
+                    {currentPantry && (
+                        <h2 className="text-lg text-gray-600 mt-1">
+                            {currentPantry.name}
+                        </h2>
+                    )}
+                </div>
                 <UserMenu />
             </div>
 

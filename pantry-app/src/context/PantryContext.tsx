@@ -176,12 +176,16 @@ export function PantryProvider({ children }: { children: ReactNode }) {
     const deletePantry = async (id: string) => {
         if (!user) return;
         
+        setSyncStatus('syncing');
         await pantryService.deletePantry(id);
-        const updatedPantries = await pantryService.getUserPantries(user.id);
-        setPantries(updatedPantries);
+        
+        // The pantries list will update automatically via the subscription
+        // Just need to select a new pantry if the current one was deleted
         if (currentPantry?.id === id) {
-            setCurrentPantry(updatedPantries[0] || null);
+            const remainingPantries = pantries.filter(p => p.id !== id);
+            setCurrentPantry(remainingPantries[0] || null);
         }
+        setSyncStatus('synced');
     };
 
     const addItem = async (list: 'inStock' | 'shoppingList', item: Omit<PantryItem, 'id' | 'lastUpdated'>) => {

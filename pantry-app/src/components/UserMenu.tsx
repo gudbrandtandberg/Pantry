@@ -1,12 +1,17 @@
 import { useState, useContext, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useUser } from '../context/UserContext';
 import { LanguageContext } from '../context/LanguageContext';
+import { usePantry } from '../context/PantryContext';
+import { CheckIcon, CloudIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import InviteLinkGenerator from './InviteLinkGenerator';
 import LanguageSelector from './LanguageSelector';
 
 export default function UserMenu() {
     const { user, signOut } = useAuth();
+    const { userData } = useUser();
     const { t } = useContext(LanguageContext);
+    const { syncStatus } = usePantry();
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -35,6 +40,15 @@ export default function UserMenu() {
         <div className="relative" ref={menuRef}>
             <div className="flex items-center gap-4">
                 <LanguageSelector />
+                <div className="absolute right-full mr-4">
+                    {syncStatus === 'synced' ? (
+                        <CheckIcon className="w-5 h-5 text-green-500" />
+                    ) : syncStatus === 'syncing' ? (
+                        <CloudIcon className="w-5 h-5 text-blue-500 animate-pulse" />
+                    ) : (
+                        <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />
+                    )}
+                </div>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
                     className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-50"
