@@ -1,1 +1,5 @@
-export const VERSION = '0.1.1';  // We can increment this manually for now 
+export const version = {
+    number: 'v0.2.0',  // Major feature: invite-only system
+    year: '2025',
+    company: 'Duff Development'
+}; 
