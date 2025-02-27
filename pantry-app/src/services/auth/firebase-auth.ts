@@ -3,6 +3,7 @@ import {
     getAuth, 
     connectAuthEmulator,
     signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
     signInWithPopup,
     GoogleAuthProvider,
     OAuthProvider,
@@ -94,6 +95,15 @@ export class FirebaseAuthService implements AuthService {
 
     async signInWithMicrosoft(): Promise<AuthUser> {
         const result = await signInWithPopup(auth, microsoftProvider);
+        return {
+            id: result.user.uid,
+            email: result.user.email!,
+            displayName: result.user.displayName || undefined
+        };
+    }
+
+    async signUp(email: string, password: string): Promise<AuthUser> {
+        const result = await createUserWithEmailAndPassword(auth, email, password);
         return {
             id: result.user.uid,
             email: result.user.email!,

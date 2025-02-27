@@ -26,7 +26,7 @@ interface PantryContextType {
     syncStatus: 'synced' | 'syncing' | 'error';
     createInviteLink: (pantryId: string, code: string) => Promise<void>;
     isOwner: (pantryId: string) => boolean;
-    joinPantryWithCode: (string) => Promise<void>;
+    joinPantryWithCode: (code: string) => Promise<void>;
 }
 
 const PantryContext = createContext<PantryContextType | null>(null);

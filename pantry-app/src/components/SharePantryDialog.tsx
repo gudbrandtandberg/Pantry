@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useContext } from 'react';
 import { LanguageContext } from '../context/LanguageContext';
 import { FirestorePantry } from '../services/db/types';
 import { usePantry } from '../context/PantryContext';
 import { v4 as uuidv4 } from 'uuid';
-import { FirestoreUserService, UserData } from '../services/db/firestore-user';
+import { FirestoreUserService } from '../services/db/firestore-user';
+import { UserData } from '../services/db/types';
 
 interface SharePantryDialogProps {
     pantry: FirestorePantry;

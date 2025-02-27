@@ -24,13 +24,23 @@ export default function PantrySelector() {
         e.preventDefault();
         if (!newPantryName.trim() || !user) return;
 
-        const newPantry: Omit<FirestorePantry, 'createdAt' | 'updatedAt'> = {
+        const newPantry = {
             id: uuidv4(),
             name: newPantryName.trim(),
             location: newPantryLocation.trim(),
             createdBy: user.id,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
             inStock: [],
-            shoppingList: []
+            shoppingList: [],
+            members: {
+                [user.id]: {
+                    role: 'owner' as const,
+                    addedAt: Date.now(),
+                    addedBy: user.id
+                }
+            },
+            inviteLinks: {}
         };
 
         await savePantry(newPantry);

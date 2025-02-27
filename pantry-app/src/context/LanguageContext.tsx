@@ -1,6 +1,8 @@
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
-import { translations, Translations } from '../i18n/translations';
+import { createContext, useState, ReactNode, useEffect } from 'react';
+import { translations } from '../i18n/translations';
 import { useUser } from './UserContext';
+
+type Translations = typeof translations.en;
 
 interface LanguageContextType {
     language: 'no' | 'en' | 'ru';
@@ -9,7 +11,12 @@ interface LanguageContextType {
     loading: boolean;
 }
 
-const LanguageContext = createContext<LanguageContextType | null>(null);
+const LanguageContext = createContext<LanguageContextType>({
+    language: 'no',
+    setLanguage: () => {},
+    t: translations.no,
+    loading: true
+});
 
 function LanguageProvider({ children }: { children: ReactNode }) {
     const { userData, updatePreferences } = useUser();

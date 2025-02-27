@@ -2,10 +2,10 @@ import React, { useState, useContext } from 'react';
 import { LanguageContext } from '../context/LanguageContext';
 import { v4 as uuidv4 } from 'uuid';
 import { Product } from '../types';
-import { commonUnits } from '../i18n/translations';
+import { units } from '../i18n/translations';
 
 interface ProductFormProps {
-    onSubmit: (Product) => void;
+    onSubmit: (product: Product) => void;
     onCancel: () => void;
 }
 
@@ -13,7 +13,7 @@ export default function ProductForm({
     onSubmit,
     onCancel
 }: ProductFormProps) {
-    const { t } = useContext(LanguageContext);
+    const { t, language } = useContext(LanguageContext);
     const [name, setName] = useState('');
     const [quantity, setQuantity] = useState('');
     const [unit, setUnit] = useState('');
@@ -59,7 +59,7 @@ export default function ProductForm({
                     className="flex-1 px-4 py-2 border rounded-lg"
                 >
                     <option value="">{t.unit}</option>
-                    {commonUnits.map(u => (
+                    {units[language].map((u: string) => (
                         <option key={u} value={u}>{u}</option>
                     ))}
                 </select>

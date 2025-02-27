@@ -8,8 +8,9 @@ const authService: AuthService = process.env.NODE_ENV === 'development'
 
 interface AuthContextType {
     user: AuthUser | null;
-    signIn: (email: string, password: string) => Promise<void>;
+    signIn: (email: string, password: string, remember?: boolean) => Promise<void>;
     signInWithGoogle: () => Promise<void>;
+    signup: (email: string, password: string) => Promise<void>;
     signOut: () => Promise<void>;
     loading: boolean;
 }
@@ -18,6 +19,7 @@ const AuthContext = createContext<AuthContextType>({
     user: null,
     signIn: async () => { throw new Error('AuthContext not initialized') },
     signInWithGoogle: async () => { throw new Error('AuthContext not initialized') },
+    signup: async () => { throw new Error('AuthContext not initialized') },
     signOut: async () => { throw new Error('AuthContext not initialized') },
     loading: true
 });
@@ -48,11 +50,17 @@ function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
     };
 
+    const signup = async (email: string, password: string) => {
+        const user = await authService.signUp(email, password);
+        setUser(user);
+    };
+
     return (
         <AuthContext.Provider value={{ 
             user, 
             signIn, 
             signInWithGoogle,
+            signup,
             signOut, 
             loading 
         }}>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { Product } from '../types';
 import ProductForm from './ProductForm';
 import { usePantry } from '../context/PantryContext';

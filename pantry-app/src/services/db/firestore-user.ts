@@ -1,22 +1,13 @@
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from './firestore';
-import { UserService, UserPreferences } from './types';
-
-export interface UserData {
-    id: string;
-    displayName: string;
-    email?: string;
-    preferences?: UserPreferences;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
+import { UserService, UserPreferences, UserData } from './types';
 
 export class FirestoreUserService implements UserService {
     async createUser(user: { id: string; email: string; displayName?: string }): Promise<UserData> {
         const userData: UserData = {
             id: user.id,
             email: user.email,
-            displayName: user.displayName,
+            displayName: user.displayName || user.email.split('@')[0],
             preferences: {
                 language: 'en'  // default language
             },
@@ -36,9 +27,12 @@ export class FirestoreUserService implements UserService {
             return null;
         }
 
+        const data = docSnap.data();
         return {
             id: docSnap.id,
-            ...docSnap.data()
+            ...data,
+            createdAt: data.createdAt.toDate(),
+            updatedAt: data.updatedAt.toDate()
         } as UserData;
     }
 

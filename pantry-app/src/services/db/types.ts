@@ -5,7 +5,7 @@ export interface UserPreferences {
 
 export interface UserData {
     id: string;
-    email: string;
+    email?: string;
     displayName?: string;
     preferences: UserPreferences;
     createdAt: Date;
@@ -53,10 +53,10 @@ export interface FirestorePantry {
 }
 
 export interface PantryService {
-    createPantry: (pantry: FirestorePantry) => Promise<FirestorePantry>;
+    createPantry: (pantry: Omit<FirestorePantry, 'createdAt' | 'updatedAt'>) => Promise<FirestorePantry>;
     getPantry: (id: string) => Promise<FirestorePantry | null>;
     getUserPantries: (userId: string) => Promise<FirestorePantry[]>;
-    updatePantry: (_pantryId: string, _data: Partial<FirestorePantry>) => Promise<void>;
+    updatePantry: (pantryId: string, data: Partial<FirestorePantry>) => Promise<void>;
     deletePantry: (_pantryId: string) => Promise<void>;
     addItem: (_pantryId: string, _list: 'inStock' | 'shoppingList', _item: Omit<PantryItem, 'lastUpdated'>) => Promise<void>;
     updateItem: (_pantryId: string, _list: 'inStock' | 'shoppingList', _item: PantryItem) => Promise<void>;

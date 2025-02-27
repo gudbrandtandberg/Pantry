@@ -45,5 +45,16 @@ export class MockAuthService implements AuthService {
         return this.currentUser;
     }
 
+    async signUp(email: string, _password: string): Promise<AuthUser> {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const mockUser = {
+            id: 'mock-signup-user-' + Date.now(),
+            email: email,
+            displayName: email.split('@')[0]
+        };
+        this.currentUser = mockUser;
+        return mockUser;
+    }
+
     // ... other methods
 } 
