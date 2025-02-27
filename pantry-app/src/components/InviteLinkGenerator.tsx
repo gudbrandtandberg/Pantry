@@ -27,16 +27,16 @@ export default function InviteLinkGenerator() {
             {inviteLink ? (
                 <div className="space-y-2">
                     <p className="text-sm text-gray-600">{t.inviteLinkCreated}</p>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 max-w-full">
                         <input
                             type="text"
                             value={inviteLink}
                             readOnly
-                            className="px-3 py-2 border rounded flex-grow"
+                            className="px-3 py-2 border rounded flex-grow min-w-0 truncate"
                         />
                         <button
                             onClick={() => navigator.clipboard.writeText(inviteLink)}
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 shrink-0"
                         >
                             {t.copy}
                         </button>
