@@ -31,8 +31,8 @@ export interface FirestorePantry {
     name: string;
     location: string;
     createdBy: string;
-    createdAt: number;
-    updatedAt: number;
+    createdAt?: number;
+    updatedAt?: number;
     inStock: PantryItem[];
     shoppingList: PantryItem[];
     members: {
@@ -45,8 +45,10 @@ export interface FirestorePantry {
     inviteLinks: {
         [code: string]: {
             createdAt: number;
+            used?: boolean;
         }
     };
+    inviteCode?: string;
 }
 
 export interface UserInviteLink {

@@ -8,7 +8,7 @@ export default function Signup() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const { signup } = useAuth();
+    const { signUp } = useAuth();
     const { t } = useContext(LanguageContext);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -20,7 +20,7 @@ export default function Signup() {
         setLoading(true);
 
         try {
-            await signup(email, password);
+            await signUp(email, password);
             // If we have a returnTo parameter, navigate there, otherwise go home
             navigate(returnTo || '/');
         } catch (err) {

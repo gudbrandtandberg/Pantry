@@ -55,8 +55,8 @@ export default function LoginPage() {
                     
                     try {
                         await joinPantryWithCode(inviteCode);
-                    } catch (err) {
-                        setError(err.message);
+                    } catch (err: unknown) {
+                        setError(err instanceof Error ? err.message : 'An unknown error occurred');
                         return;
                     }
                 }

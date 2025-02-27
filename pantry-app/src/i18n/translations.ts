@@ -29,6 +29,7 @@ interface Translations {
             google: string;
             tooManyAttempts: string;
             rememberMe: string;
+            noAccount: string;
         };
         signOut: string;
         itemName: string;
@@ -124,7 +125,8 @@ export const translations: Translations = {
             continueWith: 'Fortsett med',
             google: 'Google',
             tooManyAttempts: 'For mange forsøk. Vennligst prøv igjen senere.',
-            rememberMe: 'Husk meg'
+            rememberMe: 'Husk meg',
+            noAccount: 'Har du allerede en konto?'
         },
         signOut: 'Logg ut',
         itemName: 'Varenavn',
@@ -217,7 +219,8 @@ export const translations: Translations = {
             continueWith: 'Continue with',
             google: 'Google',
             tooManyAttempts: 'Too many attempts. Please try again later.',
-            rememberMe: 'Remember me'
+            rememberMe: 'Remember me',
+            noAccount: 'Already have an account?'
         },
         signOut: 'Sign Out',
         itemName: 'Item name',
@@ -310,7 +313,8 @@ export const translations: Translations = {
             continueWith: 'Продолжить через',
             google: 'Google',
             tooManyAttempts: 'Слишком много попыток. Пожалуйста, попробуйте позже.',
-            rememberMe: 'Запомнить меня'
+            rememberMe: 'Запомнить меня',
+            noAccount: 'Уже есть аккаунт?'
         },
         signOut: 'Выйти',
         itemName: 'Название товара',

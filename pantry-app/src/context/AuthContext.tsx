@@ -10,24 +10,24 @@ const authService = new FirebaseAuthService();
 interface AuthContextType {
     user: AuthUser | null;
     loading: boolean;
-    signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
-    signInWithGoogle: () => Promise<void>;
+    signIn: (email: string, password: string, remember?: boolean) => Promise<void>;
     signOut: () => Promise<void>;
-    signUpWithInvite: (email: string, password: string, inviteCode: string) => Promise<void>;
+    signInWithGoogle: () => Promise<void>;
     signUp: (email: string, password: string) => Promise<AuthUser>;
+    signUpWithInvite: (email: string, password: string, inviteCode: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
     loading: true,
     signIn: async () => { throw new Error('AuthContext not initialized') },
-    signInWithGoogle: async () => { throw new Error('AuthContext not initialized') },
     signOut: async () => { throw new Error('AuthContext not initialized') },
-    signUpWithInvite: async () => { throw new Error('AuthContext not initialized') },
-    signUp: async () => { throw new Error('AuthContext not initialized') }
+    signInWithGoogle: async () => { throw new Error('AuthContext not initialized') },
+    signUp: async () => { throw new Error('AuthContext not initialized') },
+    signUpWithInvite: async () => { throw new Error('AuthContext not initialized') }
 });
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
