@@ -2,7 +2,10 @@ import { useContext, useState } from 'react';
 import { usePantry } from '../context/PantryContext';
 import PantrySelector from './PantrySelector';
 import { LanguageContext } from '../context/LanguageContext';
+import { useUser } from '../context/UserContext';
+import { useAuth } from '../context/AuthContext';
 import ItemList from './ItemList';
+import { CheckIcon, CloudIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import SharePantryDialog from './SharePantryDialog';
 import Footer from './Footer';
 import UserMenu from './UserMenu';
@@ -10,6 +13,8 @@ import UserMenu from './UserMenu';
 export default function PantryApp() {
     const { currentPantry } = usePantry();
     const { t } = useContext(LanguageContext);
+    const { userData } = useUser();
+    const { signOut } = useAuth();
     const [showShareDialog, setShowShareDialog] = useState(false);
     const [syncStatus] = useState('synced');
 
