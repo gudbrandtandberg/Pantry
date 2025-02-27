@@ -126,7 +126,7 @@ export const translations: Translations = {
             google: 'Google',
             tooManyAttempts: 'For mange forsøk. Vennligst prøv igjen senere.',
             rememberMe: 'Husk meg',
-            noAccount: 'Har du allerede en konto?'
+            noAccount: 'Har du ikke en konto?'
         },
         signOut: 'Logg ut',
         itemName: 'Varenavn',
@@ -220,7 +220,7 @@ export const translations: Translations = {
             google: 'Google',
             tooManyAttempts: 'Too many attempts. Please try again later.',
             rememberMe: 'Remember me',
-            noAccount: 'Already have an account?'
+            noAccount: "Don't have an account?"
         },
         signOut: 'Sign Out',
         itemName: 'Item name',
@@ -314,7 +314,7 @@ export const translations: Translations = {
             google: 'Google',
             tooManyAttempts: 'Слишком много попыток. Пожалуйста, попробуйте позже.',
             rememberMe: 'Запомнить меня',
-            noAccount: 'Уже есть аккаунт?'
+            noAccount: 'Нет аккаунта?'
         },
         signOut: 'Выйти',
         itemName: 'Название товара',
