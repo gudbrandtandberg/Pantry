@@ -4,16 +4,9 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Helper functions
     function isSignedIn() {
-      return request.auth != null || request.auth != null;  // Allow in-flight requests
+      return request.auth != null;  // Simplified, duplicate condition removed
     }
     
-    function isOwner(pantryId) {
-      return isSignedIn() && 
-        exists(/databases/$(database)/documents/pantries/$(pantryId)) &&
-        request.auth.uid in resource.data.members &&
-        resource.data.members[request.auth.uid].role == 'owner';
-    }
-
     // User rules
     match /users/{userId} {
       allow read: if true;  // Allow reading user info even during sign out
@@ -30,7 +23,7 @@ service cloud.firestore {
     // Pantry rules
     match /pantries/{pantryId} {
       allow read: if isSignedIn();  // Allow reading all pantries for listing
-      allow create: if isSignedIn();
+      allow create: if request.auth != null;  // Explicit check instead of function call
       allow update: if isSignedIn() && (
         // Either they're the owner making changes
         (resource.data.members != null && 
