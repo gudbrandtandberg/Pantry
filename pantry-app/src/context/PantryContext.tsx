@@ -142,6 +142,8 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         
         const pantryId = uuidv4();
         
+        setSyncStatus('syncing');
+        
         const newPantry = await pantryService.createPantry({
             ...pantry,
             id: pantryId,
@@ -158,7 +160,17 @@ export function PantryProvider({ children }: { children: ReactNode }) {
             inviteLinks: {}
         });
         
-        setCurrentPantry(newPantry);
+        // Wait for the next Firestore sync before setting current pantry
+        const unsubscribe = onSnapshot(
+            doc(db, 'pantries', pantryId),
+            (doc) => {
+                if (doc.exists()) {
+                    setCurrentPantry(doc.data() as FirestorePantry);
+                    setSyncStatus('synced');
+                    unsubscribe();
+                }
+            }
+        );
     };
 
     const deletePantry = async (id: string) => {
