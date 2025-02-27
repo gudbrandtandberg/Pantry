@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { FirebaseAuthService } from '../services/auth/firebase-auth';
 import type { AuthUser } from '../services/auth/types';
+import { useNavigate } from 'react-router-dom';
 
 const authService = new FirebaseAuthService();
 
@@ -27,6 +28,7 @@ const AuthContext = createContext<AuthContextType>({
 function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Check for existing session
@@ -46,8 +48,20 @@ function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const signOut = async () => {
-        await authService.signOut();
-        setUser(null);
+        console.log('AuthContext: Starting sign out');
+        try {
+            setLoading(true);
+            setUser(null);  // Clear user first to trigger UI updates
+            await new Promise(resolve => setTimeout(resolve, 0));
+            await authService.signOut();
+            console.log('AuthContext: Sign out completed, user state cleared');
+            navigate('/login');
+        } catch (error) {
+            console.error('AuthContext: Sign out failed:', error);
+            throw error;
+        } finally {
+            setLoading(false);
+        }
     };
 
     const signup = async (email: string, password: string) => {

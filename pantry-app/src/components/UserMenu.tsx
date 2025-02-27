@@ -21,6 +21,16 @@ export default function UserMenu() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const handleSignOut = async () => {
+        console.log('UserMenu: Starting sign out');
+        try {
+            await signOut();
+            console.log('UserMenu: Sign out completed');
+        } catch (error) {
+            console.error('UserMenu: Sign out failed:', error);
+        }
+    };
+
     return (
         <div className="relative" ref={menuRef}>
             <div className="flex items-center gap-4">
@@ -40,7 +50,7 @@ export default function UserMenu() {
                 <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg p-4 space-y-4">
                     <InviteLinkGenerator />
                     <button
-                        onClick={signOut}
+                        onClick={handleSignOut}
                         className="w-full px-4 py-2 text-red-600 hover:bg-red-50 rounded"
                     >
                         {t.signOut}

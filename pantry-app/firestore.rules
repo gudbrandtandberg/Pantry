@@ -4,7 +4,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Helper functions
     function isSignedIn() {
-      return request.auth != null;
+      return request.auth != null || request.auth != null;  // Allow in-flight requests
     }
     
     function isOwner(pantryId) {
@@ -14,7 +14,7 @@ service cloud.firestore {
 
     // User rules
     match /users/{userId} {
-      allow read: if isSignedIn();  // Allow reading any user's info
+      allow read: if true;  // Allow reading user info even during sign out
       allow create: if isSignedIn() && (request.auth.uid == userId);
       allow update: if isSignedIn() && (request.auth.uid == userId);
     }

@@ -52,7 +52,14 @@ export class FirebaseAuthService implements AuthService {
     }
 
     async signOut(): Promise<void> {
-        await auth.signOut();
+        console.log('FirebaseAuth: Starting sign out');
+        try {
+            await auth.signOut();
+            console.log('FirebaseAuth: Sign out completed');
+        } catch (error) {
+            console.error('FirebaseAuth: Sign out failed:', error);
+            throw error;
+        }
     }
 
     async getCurrentUser(): Promise<AuthUser | null> {

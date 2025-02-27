@@ -2,6 +2,7 @@ import { Dialog } from '@headlessui/react';
 import { useState, useEffect } from 'react';
 import { useContext } from 'react';
 import { LanguageContext } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { FirestorePantry } from '../services/db/types';
 import { usePantry } from '../context/PantryContext';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,11 +19,12 @@ const userService = new FirestoreUserService();
 
 export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePantryDialogProps) {
     const { t } = useContext(LanguageContext);
+    const { loading: authLoading, user } = useAuth();
     const { savePantry, isOwner, loading } = usePantry();
     const [inviteLink, setInviteLink] = useState<string | null>(null);
     const [isCreatingLink, setIsCreatingLink] = useState(false);
     const [memberData, setMemberData] = useState<Record<string, UserData>>({});
-    const canShare = !loading && isOwner(pantry.id);
+    const canShare = !loading && !authLoading && isOwner(pantry.id);
 
     const members = Object.entries(pantry.members || {}).map(([userId, member]) => ({
         userId,
@@ -30,21 +32,45 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
     }));
 
     useEffect(() => {
+        if (!user) {
+            onClose();
+        }
+    }, [user, onClose]);
+
+    useEffect(() => {
+        let mounted = true;
         const fetchMemberData = async () => {
+            if (authLoading || !user) return;
+            
             const userData: Record<string, UserData> = {};
             
-            for (const member of members) {
-                const user = await userService.getUser(member.userId);
-                if (user) {
-                    userData[member.userId] = user;
+            try {
+                for (const member of members) {
+                    if (!mounted) return;
+                    const user = await userService.getUser(member.userId);
+                    if (!mounted) return;
+                    if (user) {
+                        userData[member.userId] = user;
+                    }
+                }
+                
+                if (mounted) {
+                    setMemberData(userData);
+                }
+            } catch (error) {
+                console.log('Fetch member data error:', error);
+                if (mounted) {
+                    onClose();
                 }
             }
-            
-            setMemberData(userData);
         };
         
         fetchMemberData();
-    }, [members]);
+        
+        return () => {
+            mounted = false;
+        };
+    }, [members, authLoading, user, onClose]);
 
     const handleCreateInvite = async () => {
         setIsCreatingLink(true);
