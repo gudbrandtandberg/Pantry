@@ -15,7 +15,7 @@ export default function JoinPantry() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const joinPantry = async () => {
+        const handleJoinPantry = async () => {
             if (!user || !code) return;
             
             try {
@@ -28,8 +28,10 @@ export default function JoinPantry() {
             }
         };
 
-        joinPantry();
-    }, [code, user]);
+        if (code) {
+            handleJoinPantry();
+        }
+    }, [code, joinPantryWithCode, navigate, user]);
 
     if (!user) {
         return (

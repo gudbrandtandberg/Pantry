@@ -1,6 +1,15 @@
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from './firestore';
-import { UserData, UserService, UserPreferences } from './types';
+import { UserService, UserPreferences } from './types';
+
+export interface UserData {
+    id: string;
+    displayName: string;
+    email?: string;
+    preferences?: UserPreferences;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
 
 export class FirestoreUserService implements UserService {
     async createUser(user: { id: string; email: string; displayName?: string }): Promise<UserData> {

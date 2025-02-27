@@ -11,7 +11,6 @@ interface AuthContextType {
     user: AuthUser | null;
     signIn: (email: string, password: string) => Promise<void>;
     signInWithGoogle: () => Promise<void>;
-    signInWithMicrosoft: () => Promise<void>;
     signOut: () => Promise<void>;
     loading: boolean;
 }
@@ -20,7 +19,6 @@ const AuthContext = createContext<AuthContextType>({
     user: null,
     signIn: async () => { throw new Error('AuthContext not initialized') },
     signInWithGoogle: async () => { throw new Error('AuthContext not initialized') },
-    signInWithMicrosoft: async () => { throw new Error('AuthContext not initialized') },
     signOut: async () => { throw new Error('AuthContext not initialized') },
     loading: true
 });
@@ -46,11 +44,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
         setUser(user);
     };
 
-    const signInWithMicrosoft = async () => {
-        const user = await authService.signInWithMicrosoft();
-        setUser(user);
-    };
-
     const signOut = async () => {
         await authService.signOut();
         setUser(null);
@@ -61,7 +54,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
             user, 
             signIn, 
             signInWithGoogle,
-            signInWithMicrosoft,
             signOut, 
             loading 
         }}>

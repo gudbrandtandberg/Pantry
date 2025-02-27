@@ -102,13 +102,14 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         );
         
         return () => unsubscribe();
+        // We only want to run this effect when the user changes
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     useEffect(() => {
         if (!currentPantry) return;
         
         setSyncStatus('syncing');
-        console.log('Watching pantry:', currentPantry.id, 'with data:', currentPantry);
         
         const unsubscribe = onSnapshot(
             doc(db, 'pantries', currentPantry.id),
@@ -137,6 +138,8 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         );
         
         return () => unsubscribe();
+        // We only want to re-subscribe when the ID changes, not on every pantry update
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPantry?.id]);
 
     const savePantry = async (pantry: Omit<FirestorePantry, 'createdAt' | 'updatedAt'>) => {
@@ -144,30 +147,10 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         
         const pantryId = uuidv4();
         
-        console.log('Creating pantry with data:', {
-            id: pantryId,
-            ...pantry,
-            createdBy: user.id,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-            inStock: [],
-            shoppingList: [],
-            members: {
-                [user.id]: {
-                    role: 'owner',
-                    addedAt: Date.now(),
-                    addedBy: user.id
-                }
-            },
-            inviteLinks: {}
-        });
-        
         const newPantry = await pantryService.createPantry({
-            id: pantryId,
             ...pantry,
+            id: pantryId,
             createdBy: user.id,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
             inStock: [],
             shoppingList: [],
             members: {
@@ -304,14 +287,6 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    // Add debouncing for rapid updates
-    const debouncedSetCurrentPantry = useMemo(
-        () => debounce((pantry: FirestorePantry | null) => {
-            setCurrentPantry(pantry);
-        }, 300),
-        []
-    );
-
     const isOwner = (pantryId: string) => {
         const pantry = pantries.find(p => p.id === pantryId);
         return pantry?.members && user?.id ? pantry.members[user.id]?.role === 'owner' : false;
@@ -366,7 +341,7 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         }
         
         // Add user as member and mark invite as used
-        const updateData = {
+        const updateData: Partial<FirestorePantry> & { inviteCode: string } = {
             inviteCode: code,
             [`members.${user.id}`]: {
                 role: 'editor',

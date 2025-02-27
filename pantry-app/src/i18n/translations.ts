@@ -74,6 +74,7 @@ interface Translations {
         members: string;
         owner: string;
         editor: string;
+        loading: string;
     };
 }
 
@@ -150,7 +151,7 @@ export const translations: Translations = {
             email: 'E-post',
             password: 'Passord',
             submit: 'Opprett konto',
-            loading: 'Oppretter konto...',
+            loading: 'Laster...',
             error: 'Kunne ikke opprette konto',
             haveAccount: 'Har du allerede en konto?',
             login: 'Logg inn'
@@ -158,6 +159,7 @@ export const translations: Translations = {
         members: 'Medlemmer',
         owner: 'Eier',
         editor: 'Redaktør',
+        loading: 'Laster...',
     },
     'en': {
         title: 'Family Pantry',
@@ -239,6 +241,7 @@ export const translations: Translations = {
         members: 'Members',
         owner: 'Owner',
         editor: 'Editor',
+        loading: 'Loading...',
     },
     'ru': {
         title: 'Семейная Кладовая',
@@ -320,6 +323,7 @@ export const translations: Translations = {
         members: 'Участники',
         owner: 'Владелец',
         editor: 'Редактор',
+        loading: 'Загрузка...',
     }
 };
 
