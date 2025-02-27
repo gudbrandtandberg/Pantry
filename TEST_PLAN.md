@@ -1,6 +1,7 @@
 # Family Pantry App - Manual Test Plan
 
-## Setup
+## Setup & Initial Data
+
 1. Start emulators:
    ```bash
    firebase emulators:start
@@ -14,75 +15,7 @@
    python scripts/db_emulator.py
    ```
 
-## Test Scenarios
-
-### 1. Authentication
-- [ ] Visit http://localhost:5173
-- [ ] Should redirect to /login
-- [ ] Try logging in with incorrect credentials
-  - Email: wrong@example.com
-  - Password: wrong
-  - Should show error message
-- [ ] Log in with test account
-  - Email: test@example.com
-  - Password: password123
-  - Should redirect to main app
-
-### 2. Pantry Selection
-- [ ] Should see "Test Pantry" in dropdown
-- [ ] Select "Test Pantry"
-- [ ] Verify items appear in both lists
-- [ ] Create new pantry:
-  - Click "New Pantry"
-  - Name: "Weekend House"
-  - Location: "Mountain Cabin"
-  - Should appear in dropdown
-
-### 3. Item Management
-- [ ] Add item to In Stock:
-  - Name: "Milk"
-  - Quantity: 2
-  - Unit: "l"
-  - Should appear in list
-- [ ] Move item to Shopping List
-  - Click move button
-  - Should disappear from In Stock
-  - Should appear in Shopping List
-- [ ] Delete item
-  - Click delete button
-  - Should be removed
-
-### 4. Sharing & Invites
-- [ ] Click share button
-- [ ] Generate invite link
-- [ ] Open link in incognito window
-- [ ] Create new account with invite:
-  - Email: new@example.com
-  - Password: password123
-- [ ] Verify new user can see shared pantry
-- [ ] Verify new user can add/edit items
-
-### 5. Language Support
-- [ ] Change language to Norwegian
-  - UI should update
-  - Items should remain
-- [ ] Change back to English
-  - UI should update back
-
-### 6. Error Handling
-- [ ] Disconnect internet
-  - Should show sync error icon
-- [ ] Reconnect internet
-  - Should show synced icon
-- [ ] Try deleting non-owned pantry
-  - Should show error message
-
-### 7. Logout Flow
-- [ ] Click logout
-- [ ] Should redirect to login
-- [ ] Verify can't access app without login
-
-## Expected Initial Data
+### Test Accounts
 - Test User:
   - Email: test@example.com
   - Password: password123
@@ -92,140 +25,115 @@
   - Password: password123
   - Has: "Best Pantry" with different items
 
-## 1. Authentication
+## Test Scenarios
 
-### Sign Up
+### 1. Authentication
+- [ ] Initial Load
+  - Visit http://localhost:5173
+  - Should redirect to /login
+- [ ] Sign In Validation
+  - Try incorrect credentials (wrong@example.com/wrong)
+  - Verify error message is clear
+  - Test password requirements
+  - Test email format validation
+- [ ] Successful Sign In
+  - Use test@example.com/password123
+  - Verify redirect to main app
+  - Test "Remember me" functionality
+- [ ] Sign Out Flow
+  - Click logout
+  - Verify redirect to login
+  - Verify clean state after sign out
+  - Check protected routes are inaccessible
 
-- [ ] Create account with email/password
-- [ ] Validate email format requirements
-- [ ] Validate password requirements
-- [ ] Test Google sign-in
-- [ ] Verify redirect after successful signup
-- [ ] Test error handling for duplicate emails
+### 2. Pantry Management
+- [ ] Initial View
+  - Should see "Test Pantry" in dropdown
+  - Select "Test Pantry"
+  - Verify items appear in both lists
+- [ ] Create New Pantry
+  - Click "New Pantry"
+  - Name: "Weekend House"
+  - Location: "Mountain Cabin"
+  - Verify appears in dropdown
+  - Verify user becomes owner
+- [ ] Edit/Delete
+  - Test rename pantry
+  - Test location change
+  - Test delete (owner only)
+  - Verify delete confirmation
 
-### Sign In
+### 3. Item Management
+- [ ] Add Items
+  - Add to In Stock:
+    - Name: "Milk"
+    - Quantity: 2
+    - Unit: "l"
+  - Verify appears in list
+  - Test unit selection
+  - Test custom units
+- [ ] Move Items
+  - Move item to Shopping List
+  - Verify disappears from In Stock
+  - Verify appears in Shopping List
+  - Test multiple moves rapidly
+- [ ] Delete Items
+  - Click delete button
+  - Verify immediate removal
+  - Test undo if implemented
 
-- [ ] Sign in with email/password
-- [ ] Sign in with Google
-- [ ] Test "Remember me" functionality
-- [ ] Test error handling for wrong password
-- [ ] Test error handling for non-existent account
-- [ ] Verify redirect after successful login
+### 4. Sharing & Collaboration
+- [ ] App Invitation (New User)
+  - Click user menu in top right
+  - Generate and copy invite link
+  - Test in incognito window
+  - Create new account (new@example.com)
+  - Verify redirect to main app
+- [ ] Pantry Sharing
+  - Click "Share" button by pantry selector
+  - Generate invite link
+  - Test with new user (incognito)
+  - Test with existing user (best@example.com)
+  - Verify both can access and edit
+  - Verify real-time updates
+- [ ] Permissions
+  - Verify owner vs editor rights
+  - Test expired/used links
+  - Test member list display
 
-### Sign Out
+### 5. Language Support
+- [ ] Change to Norwegian
+  - Verify UI updates
+  - Verify items remain unchanged
+- [ ] Return to English
+  - Verify complete translation
+  - Check all dialogs
 
-- [ ] Verify sign out works
-- [ ] Check redirect after sign out
-- [ ] Verify protected routes are inaccessible after logout
+### 6. Error Handling & Edge Cases
+- [ ] Network Issues
+  - Test offline behavior
+  - Check sync status indicator
+  - Verify recovery on reconnect
+- [ ] Data Limits
+  - Test long item names
+  - Test many items
+  - Test many members
+- [ ] Rapid Operations
+  - Test quick sequential actions
+  - Test concurrent edits
+  - Test browser refresh/reload
 
-## 2. Pantry Management
-
-### Create Pantry
-
-- [ ] Create new pantry with name
-- [ ] Create pantry with location
-- [ ] Verify user becomes owner
-- [ ] Test validation (empty name, etc)
-
-### Edit/Delete Pantry
-
-- [ ] Rename pantry
-- [ ] Change location
-- [ ] Delete pantry (owner only)
-- [ ] Verify delete confirmation dialog
-- [ ] Test delete with wrong confirmation text
-
-## 3. Item Management
-
-### Add Items
-
-- [ ] Add item to In Stock
-- [ ] Add item to Shopping List
-- [ ] Test quantity field
-- [ ] Test unit selection
-- [ ] Test custom unit input
-- [ ] Verify real-time updates
-
-### Edit Items
-
-- [ ] Edit item name
-- [ ] Edit quantity
-- [ ] Edit unit
-- [ ] Verify changes reflect immediately
-
-### Move Items
-
-- [ ] Move from In Stock to Shopping List
-- [ ] Move from Shopping List to In Stock
-- [ ] Verify item maintains properties when moved
-- [ ] Test multiple moves rapidly
-
-### Delete Items
-
-- [ ] Delete from In Stock
-- [ ] Delete from Shopping List
-- [ ] Verify immediate removal
-- [ ] Test undo/confirmation if implemented
-
-## 4. Sharing & Collaboration
-
-### Share Pantry
-
-- [ ] Create invite link (owner only)
-- [ ] Copy link to clipboard
-- [ ] Verify link expiration
-- [ ] Test link reuse prevention
-
-### Join Pantry
-
-- [ ] Join with valid link
-- [ ] Test expired link
-- [ ] Test already used link
-- [ ] Test when already a member
-- [ ] Verify correct permissions assigned
-
-### Multi-user Testing
-
-- [ ] Verify real-time updates between users
-- [ ] Test concurrent edits
-- [ ] Verify permissions (owner vs editor)
-- [ ] Test member list display
-
-## 5. Language Support
-
-- [ ] Test Norwegian translation completeness
-- [ ] Test English translation completeness
-- [ ] Test Russian translation completeness
-- [ ] Verify language persistence
-- [ ] Check all dialogs in each language
-
-## 6. Mobile & Responsive
-
-- [ ] Test on small screens (320px width)
-- [ ] Test on medium screens (768px width)
-- [ ] Test on large screens (1024px+)
-- [ ] Verify touch interactions
-- [ ] Test orientation changes
-
-## 7. Error Handling
-
-- [ ] Test offline behavior
-- [ ] Test slow connection behavior
-- [ ] Verify error messages are clear
-- [ ] Check sync status indicator
-- [ ] Test recovery from errors
-
-## 8. Edge Cases
-
-- [ ] Test with very long item names
-- [ ] Test with large numbers of items
-- [ ] Test with many pantry members
-- [ ] Test rapid sequential operations
-- [ ] Test browser refresh/reload scenarios
+### 7. Mobile & Responsive
+- [ ] Screen Sizes
+  - Test 320px width
+  - Test 768px width
+  - Test 1024px+
+- [ ] Interactions
+  - Verify touch support
+  - Test orientation changes
 
 ## Notes
-
-- Document any bugs found
-- Note any UI/UX improvements needed
+- Document bugs found
+- Note UI/UX improvements
 - Track performance issues
-- List any missing features discovered during testing
+- List missing features
