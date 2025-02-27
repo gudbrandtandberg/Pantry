@@ -1,10 +1,8 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { AuthService, AuthUser } from '../services/auth/types';
 import { FirebaseAuthService } from '../services/auth/firebase-auth';
+import type { AuthUser } from '../services/auth/types';
 
-const authService: AuthService = process.env.NODE_ENV === 'development' 
-    ? new FirebaseAuthService()  // Switch to Firebase for testing
-    : new FirebaseAuthService();
+const authService = new FirebaseAuthService();
 
 interface AuthContextType {
     user: AuthUser | null;
@@ -13,6 +11,7 @@ interface AuthContextType {
     signup: (email: string, password: string) => Promise<void>;
     signOut: () => Promise<void>;
     loading: boolean;
+    signUpWithInvite: (email: string, password: string, inviteCode: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -21,7 +20,8 @@ const AuthContext = createContext<AuthContextType>({
     signInWithGoogle: async () => { throw new Error('AuthContext not initialized') },
     signup: async () => { throw new Error('AuthContext not initialized') },
     signOut: async () => { throw new Error('AuthContext not initialized') },
-    loading: true
+    loading: true,
+    signUpWithInvite: async () => { throw new Error('AuthContext not initialized') }
 });
 
 function AuthProvider({ children }: { children: ReactNode }) {
@@ -51,7 +51,12 @@ function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const signup = async (email: string, password: string) => {
-        const user = await authService.signUp(email, password);
+        const user = await authService.signUpWithInvite(email, password, '');
+        setUser(user);
+    };
+
+    const signUpWithInvite = async (email: string, password: string, inviteCode: string) => {
+        const user = await authService.signUpWithInvite(email, password, inviteCode);
         setUser(user);
     };
 
@@ -62,7 +67,8 @@ function AuthProvider({ children }: { children: ReactNode }) {
             signInWithGoogle,
             signup,
             signOut, 
-            loading 
+            loading,
+            signUpWithInvite
         }}>
             {children}
         </AuthContext.Provider>

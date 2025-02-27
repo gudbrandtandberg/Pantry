@@ -281,19 +281,21 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         if (!user || !isOwner(pantryId)) {
             throw new Error('Unauthorized');
         }
+        if (!currentPantry) {
+            throw new Error('No pantry selected');
+        }
 
-        const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days
-        
-        await pantryService.updatePantry(pantryId, {
+        const updatedPantry = {
+            ...currentPantry,
             inviteLinks: {
+                ...currentPantry.inviteLinks,
                 [code]: {
                     createdAt: Date.now(),
-                    createdBy: user.id,
-                    expiresAt,
-                    used: false
                 }
             }
-        });
+        };
+        
+        await pantryService.updatePantry(pantryId, updatedPantry);
     };
 
     const joinPantryWithCode = async (code: string) => {
@@ -317,21 +319,16 @@ export function PantryProvider({ children }: { children: ReactNode }) {
             throw new Error(t.invalidInviteLink);
         }
         
-        if (invite.expiresAt < Date.now()) {
-            throw new Error(t.inviteLinkExpired);
-        }
-        
         if (pantry.members[user.id]) {
             throw new Error(t.alreadyMember);
         }
         
-        // Add user as member and mark invite as used
-        const updateData: Partial<FirestorePantry> & { inviteCode: string } = {
-            inviteCode: code,
+        // Update member data
+        const updateData: Partial<FirestorePantry> = {
             [`members.${user.id}`]: {
                 role: 'editor',
                 addedAt: Date.now(),
-                addedBy: invite.createdBy
+                addedBy: user.id
             },
             [`inviteLinks.${code}.used`]: true
         };
@@ -370,4 +367,4 @@ function usePantry() {
     return context;
 }
 
-export { usePantry }; 
+export { usePantry };

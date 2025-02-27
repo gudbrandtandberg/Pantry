@@ -1,6 +1,6 @@
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from './firestore';
-import { UserService, UserPreferences, UserData, UserInviteLink } from './types';
+import { UserService, UserPreferences, UserData } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 export class FirestoreUserService implements UserService {

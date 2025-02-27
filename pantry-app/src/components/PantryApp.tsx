@@ -9,7 +9,6 @@ import { CheckIcon, CloudIcon, ExclamationTriangleIcon } from '@heroicons/react/
 import SharePantryDialog from './SharePantryDialog';
 import Footer from './Footer';
 import UserMenu from './UserMenu';
-import LanguageSelector from './LanguageSelector';
 
 export default function PantryApp() {
     const { currentPantry } = usePantry();
@@ -57,12 +56,9 @@ export default function PantryApp() {
     return (
         <div className="min-h-screen bg-blue-100 p-4">
             <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-4">
-                    <h1 className="text-2xl font-bold">
-                        {currentPantry?.name || t.title}
-                    </h1>
-                    <LanguageSelector />
-                </div>
+                <h1 className="text-2xl font-bold">
+                    {currentPantry?.name || t.title}
+                </h1>
                 <UserMenu />
             </div>
 

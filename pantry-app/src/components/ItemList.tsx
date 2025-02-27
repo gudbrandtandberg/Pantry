@@ -7,14 +7,14 @@ import { units } from '../i18n/translations';
 import ComboBox from './ComboBox';
 
 interface ItemListProps {
-    type: 'inStock' | 'shoppingList';
+    title: string;
+    products: PantryItem[];
+    listType: 'inStock' | 'shoppingList';
 }
 
-export default function ItemList({ type }: ItemListProps) {
-    const { currentPantry, addItem, removeItem, moveItem } = usePantry();
-    const context = useContext(LanguageContext);
-    if (!context) throw new Error('ItemList must be used within LanguageProvider');
-    const { language, t } = context;
+export default function ItemList({ title, products, listType }: ItemListProps) {
+    const { addItem, removeItem, moveItem } = usePantry();
+    const { t, language } = useContext(LanguageContext);
     const [newItemName, setNewItemName] = useState('');
     const [newItemQuantity, setNewItemQuantity] = useState('');
     const [newItemUnit, setNewItemUnit] = useState('');
@@ -40,7 +40,7 @@ export default function ItemList({ type }: ItemListProps) {
                 newItem.unit = newItemUnit.trim();
             }
 
-            await addItem(type, newItem);
+            await addItem(listType, newItem);
 
             // Clear form
             setNewItemName('');
@@ -58,8 +58,8 @@ export default function ItemList({ type }: ItemListProps) {
         try {
             setLoadingItems(prev => new Set([...prev, itemId]));
             await moveItem(
-                type,
-                type === 'inStock' ? 'shoppingList' : 'inStock',
+                listType as 'inStock' | 'shoppingList',
+                listType === 'inStock' ? 'shoppingList' : 'inStock',
                 itemId
             );
         } finally {
@@ -74,7 +74,7 @@ export default function ItemList({ type }: ItemListProps) {
     const handleRemoveItem = async (itemId: string) => {
         try {
             setLoadingItems(prev => new Set([...prev, itemId]));
-            await removeItem(type, itemId);
+            await removeItem(listType, itemId);
         } finally {
             setLoadingItems(prev => {
                 const next = new Set(prev);
@@ -84,13 +84,9 @@ export default function ItemList({ type }: ItemListProps) {
         }
     };
 
-    const items = type === 'inStock' ? currentPantry?.inStock : currentPantry?.shoppingList;
-
     return (
-        <div>
-            <h2 className="text-xl font-bold">
-                {type === 'inStock' ? t.inStock : t.shoppingList}
-            </h2>
+        <div className="bg-white p-4 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">{title}</h2>
 
             <form onSubmit={handleAddItem} className="flex flex-wrap gap-2 mt-4">
                 <input
@@ -128,7 +124,7 @@ export default function ItemList({ type }: ItemListProps) {
             </form>
 
             <ul className="space-y-2 mt-4">
-                {items?.map((item) => (
+                {products.map((item) => (
                     <li key={item.id} className="flex items-center justify-between gap-4 p-2 bg-gray-50 rounded border">
                         <span>
                             {item.name}
@@ -145,7 +141,7 @@ export default function ItemList({ type }: ItemListProps) {
                                 disabled={loadingItems.has(item.id)}
                             >
                                 {loadingItems.has(item.id) ? '...' : 
-                                    type === 'inStock' ? t.moveToShoppingList : t.moveToInStock}
+                                    listType === 'inStock' ? t.moveToShoppingList : t.moveToInStock}
                             </button>
                             <button
                                 onClick={() => handleRemoveItem(item.id)}

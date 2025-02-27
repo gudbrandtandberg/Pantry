@@ -80,6 +80,8 @@ interface Translations {
         generating: string;
         invalidInviteCode: string;
         signupWithInvite: string;
+        email: string;
+        password: string;
     };
 }
 
@@ -170,6 +172,8 @@ export const translations: Translations = {
         generating: 'Genererer...',
         invalidInviteCode: 'Ugyldig invitasjonskode',
         signupWithInvite: 'Registrer deg med invitasjon',
+        email: 'E-post',
+        password: 'Passord',
     },
     'en': {
         title: 'Family Pantry',
@@ -257,6 +261,8 @@ export const translations: Translations = {
         generating: 'Generating...',
         invalidInviteCode: 'Invalid invite code',
         signupWithInvite: 'Sign up with invite',
+        email: 'Email',
+        password: 'Password',
     },
     'ru': {
         title: 'Семейная Кладовая',
@@ -344,6 +350,8 @@ export const translations: Translations = {
         generating: 'Создание...',
         invalidInviteCode: 'Неверный код приглашения',
         signupWithInvite: 'Регистрация по приглашению',
+        email: 'Эл. почта',
+        password: 'Пароль',
     }
 };
 

@@ -10,7 +10,11 @@ import DeletePantryDialog from './DeletePantryDialog';
 import { TrashIcon, ShareIcon } from '@heroicons/react/24/outline';
 import SharePantryDialog from './SharePantryDialog';
 
-export default function PantrySelector() {
+interface PantrySelectorProps {
+    onShare?: () => void;
+}
+
+export default function PantrySelector({ onShare }: PantrySelectorProps) {
     const { pantries, currentPantry, setCurrentPantry, savePantry, deletePantry } = usePantry();
     const { user } = useAuth();
     const { t, language } = useContext(LanguageContext);
@@ -69,22 +73,20 @@ export default function PantrySelector() {
                     ))}
                 </select>
                 {currentPantry && (
-                    <>
-                        <button
-                            onClick={() => setIsShareDialogOpen(true)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
-                            title={t.share}
-                        >
-                            <ShareIcon className="w-5 h-5" />
-                        </button>
+                    <div className="flex gap-2">
                         <button
                             onClick={() => setPantryToDelete(currentPantry)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-full"
-                            title={t.delete}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                         >
                             <TrashIcon className="w-5 h-5" />
                         </button>
-                    </>
+                        <button
+                            onClick={onShare}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                        >
+                            <ShareIcon className="w-5 h-5" />
+                        </button>
+                    </div>
                 )}
             </div>
 

@@ -12,7 +12,7 @@ import {
     browserSessionPersistence,
     onAuthStateChanged
 } from 'firebase/auth';
-import { AuthService, AuthUser } from './types';
+import type { AuthService, AuthUser } from './types';
 import { firebaseConfig } from '../../config/firebase';
 import { FirestoreUserService } from '../db/firestore-user';
 

@@ -5,10 +5,10 @@ export interface AuthUser {
 }
 
 export interface AuthService {
-    signIn: (email: string, password: string) => Promise<AuthUser>;
+    signIn: (email: string, password: string, remember?: boolean) => Promise<AuthUser>;
     signInWithGoogle: () => Promise<AuthUser>;
-    signUpWithInvite: (email: string, password: string, inviteCode: string) => Promise<AuthUser>;
     signOut: () => Promise<void>;
     getCurrentUser: () => Promise<AuthUser | null>;
+    signUpWithInvite: (email: string, password: string, inviteCode: string) => Promise<AuthUser>;
     // Add more methods as needed
 } 
