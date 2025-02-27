@@ -66,14 +66,15 @@ export default function LoginPage() {
                     
                     try {
                         await joinPantryWithCode(inviteCode);
-                        navigate('/');
                     } catch (err) {
                         console.error('Failed to join pantry:', err);
                         setError(err.message);
+                        return;
                     }
-                } else {
-                    navigate('/');
                 }
+
+                await signIn(email, password, rememberMe);
+                navigate('/');
             } else {
                 await signIn(email, password, rememberMe);
                 if (inviteCode) {

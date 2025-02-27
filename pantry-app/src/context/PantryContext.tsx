@@ -318,14 +318,23 @@ export function PantryProvider({ children }: { children: ReactNode }) {
     };
 
     const joinPantryWithCode = async (code: string) => {
-        if (!user) throw new Error('Must be logged in');
-        
-        const currentUser = auth.currentUser;
-        if (!currentUser) throw new Error('Must be logged in');
-        const userId = currentUser.uid;
+        // Wait for auth state to be ready with retries
+        let userId: string;
+        for (let i = 0; i < 5; i++) {  // Try up to 5 times
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+                userId = currentUser.uid;
+                break;
+            }
+            if (i === 4) {  // Last attempt
+                throw new Error('Must be logged in');
+            }
+            // Wait 500ms before next attempt
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
         
         console.log('Attempting to join pantry with code:', code);
-        console.log('Current user ID:', userId);
+        console.log('Current user ID:', userId!);
         
         const pantryQuery = query(
             collection(db, 'pantries'),

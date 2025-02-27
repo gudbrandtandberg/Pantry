@@ -26,7 +26,6 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
     const [inviteLink, setInviteLink] = useState<string | null>(null);
     const [isCreatingLink, setIsCreatingLink] = useState(false);
     const [memberData, setMemberData] = useState<Record<string, UserData>>({});
-    const [showOwnerError, setShowOwnerError] = useState(false);
 
     const members = Object.entries(pantry.members || {}).map(([userId, member]) => ({
         userId,
@@ -76,7 +75,6 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
 
     const handleCreateInviteLink = async () => {
         if (!isOwner(pantry.id)) {
-            setShowOwnerError(true);
             return;
         }
         setIsCreatingLink(true);
@@ -99,12 +97,6 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
                 <div className="bg-white rounded-lg p-6 max-w-md w-full">
                     <h2 className="text-xl font-bold mb-4">{t.sharePantryTitle}</h2>
                     
-                    {showOwnerError && (
-                        <div className="text-red-600 mb-4">
-                            {t.onlyOwnerCanShare}
-                        </div>
-                    )}
-
                     <div className="mb-6">
                         <h3 className="font-medium mb-2">{t.currentMembers}</h3>
                         <ul className="space-y-2">
@@ -119,42 +111,44 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
                         </ul>
                     </div>
 
-                    <div className="space-y-4">
-                        {inviteLink ? (
-                            <div className="space-y-2">
-                                <p className="text-sm text-gray-600">{t.inviteLinkCreated}</p>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        value={inviteLink}
-                                        readOnly
-                                        className="px-3 py-2 border rounded flex-grow"
-                                    />
-                                    <button
-                                        onClick={() => navigator.clipboard.writeText(inviteLink)}
-                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                    >
-                                        {t.copy}
-                                    </button>
+                    {isOwner(pantry.id) && (
+                        <>
+                            {inviteLink ? (
+                                <div className="mt-4">
+                                    <p className="mb-2">{t.inviteLinkCreated}</p>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={inviteLink}
+                                            readOnly
+                                            className="flex-1 p-2 border rounded"
+                                        />
+                                        <button
+                                            onClick={() => navigator.clipboard.writeText(inviteLink)}
+                                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                        >
+                                            {t.copy}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <button
-                                onClick={handleCreateInviteLink}
-                                disabled={isCreatingLink}
-                                className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-                            >
-                                {isCreatingLink ? t.creatingLink : t.createInviteLink}
-                            </button>
-                        )}
-                        
-                        <button
-                            onClick={onClose}
-                            className="w-full px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
-                        >
-                            {t.close}
-                        </button>
-                    </div>
+                            ) : (
+                                <button
+                                    onClick={handleCreateInviteLink}
+                                    disabled={isCreatingLink}
+                                    className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                                >
+                                    {isCreatingLink ? t.creatingLink : t.createInviteLink}
+                                </button>
+                            )}
+                        </>
+                    )}
+
+                    <button
+                        onClick={onClose}
+                        className="w-full mt-4 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                    >
+                        {t.close}
+                    </button>
                 </div>
             </div>
         </Dialog>
