@@ -25,7 +25,7 @@ export default function Login({ returnTo }: LoginProps) {
             await signIn(email, password);
             navigate(returnPath || '/');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Unknown error');
+            setError(err instanceof Error ? err.message : 'An unexpected error occurred');
         }
     };
 
@@ -44,7 +44,7 @@ export default function Login({ returnTo }: LoginProps) {
                 <h1 className="text-2xl font-bold mb-6">{t.login.title}</h1>
                 
                 {error && (
-                    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded">
                         {error}
                     </div>
                 )}
