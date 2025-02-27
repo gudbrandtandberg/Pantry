@@ -4,15 +4,23 @@ import { LanguageContext } from '../context/LanguageContext';
 import LanguageSelector from './LanguageSelector';
 import { FirebaseError } from 'firebase/app';
 import LoadingSpinner from './LoadingSpinner';
+import { useParams, useNavigate } from 'react-router-dom';
+import { FirestoreUserService } from '../services/db/firestore-user';
+
+const userService = new FirestoreUserService();
 
 export default function LoginPage() {
-    const { signIn, signInWithGoogle } = useAuth();
+    const { signIn, signInWithGoogle, signUp } = useAuth();
     const { t } = useContext(LanguageContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isSignUp, setIsSignUp] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const { inviteCode } = useParams();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -20,23 +28,60 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            await signIn(email, password, rememberMe);
+            if (isSignUp) {
+                if (!name.trim()) {
+                    setError(t.signup.nameRequired);
+                    return;
+                }
+                console.log('Starting signup process...');
+                const user = await signUp(email, password);
+                console.log('Auth signup successful:', user);
+                if (!user) {
+                    throw new Error('Failed to create account');
+                }
+                console.log('Creating user document...');
+                await userService.createUser({
+                    id: user.id,
+                    email: user.email,
+                    displayName: name.trim()
+                });
+                console.log('User document created');
+                if (inviteCode) {
+                    navigate(`/join/${inviteCode}`);
+                } else {
+                    navigate('/');
+                }
+            } else {
+                await signIn(email, password, rememberMe);
+                if (inviteCode) {
+                    navigate(`/join/${inviteCode}`);
+                } else {
+                    navigate('/');
+                }
+            }
         } catch (err: unknown) {
+            console.error('Signup error:', err);
             if (err instanceof FirebaseError) {
                 switch (err.code) {
+                    case 'auth/email-already-in-use':
+                        setError(t.signup.emailInUse);
+                        break;
+                    case 'auth/weak-password':
+                        setError(t.signup.weakPassword);
+                        break;
                     case 'auth/invalid-email':
                     case 'auth/user-not-found':
                     case 'auth/wrong-password':
-                        setError(t.login.error);
+                        setError(isSignUp ? t.signup.error : t.login.error);
                         break;
                     case 'auth/too-many-requests':
                         setError(t.login.tooManyAttempts);
                         break;
                     default:
-                        setError(t.login.error);
+                        setError(isSignUp ? t.signup.error : t.login.error);
                 }
             } else {
-                setError(t.login.error);
+                setError(isSignUp ? t.signup.error : t.login.error);
             }
         } finally {
             setIsLoading(false);
@@ -70,7 +115,7 @@ export default function LoginPage() {
             </div>
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                 <h1 className="text-2xl font-bold mb-6 text-center">
-                    {t.login.title}
+                    {isSignUp ? t.signup.title : t.login.title}
                 </h1>
 
                 {error && (
@@ -80,6 +125,21 @@ export default function LoginPage() {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {isSignUp && (
+                        <div>
+                            <label className="block text-gray-700 mb-2">
+                                {t.signup.name}
+                            </label>
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            />
+                        </div>
+                    )}
+
                     <div>
                         <label className="block text-gray-700 mb-2">
                             {t.login.email}
@@ -128,7 +188,7 @@ export default function LoginPage() {
                                 : 'bg-blue-500 hover:bg-blue-600'
                             }`}
                     >
-                        {isLoading ? <LoadingSpinner /> : t.login.submit}
+                        {isLoading ? <LoadingSpinner /> : isSignUp ? t.signup.submit : t.login.submit}
                     </button>
                 </form>
 
@@ -155,6 +215,30 @@ export default function LoginPage() {
                         </button>
                     </div>
                 </div>
+
+                <p className="mt-4 text-center text-sm text-gray-600">
+                    {isSignUp ? (
+                        <>
+                            {t.signup.haveAccount}{' '}
+                            <button
+                                onClick={() => setIsSignUp(false)}
+                                className="text-blue-500 hover:text-blue-600"
+                            >
+                                {t.signup.login}
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            {t.login.noAccount}{' '}
+                            <button
+                                onClick={() => setIsSignUp(true)}
+                                className="text-blue-500 hover:text-blue-600"
+                            >
+                                {t.signup.submit}
+                            </button>
+                        </>
+                    )}
+                </p>
             </div>
         </div>
     );

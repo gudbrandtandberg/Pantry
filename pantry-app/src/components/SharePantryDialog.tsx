@@ -82,12 +82,13 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
                     ...pantry.inviteLinks,
                     [code]: {
                         createdAt: Date.now(),
+                        used: false
                     }
                 }
             };
 
             await savePantry(updatedPantry);
-            setInviteLink(`${window.location.origin}/join/${code}`);
+            setInviteLink(`${window.location.origin}/login/${code}`);
         } finally {
             setIsCreatingLink(false);
         }

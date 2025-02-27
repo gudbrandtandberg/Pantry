@@ -3,9 +3,8 @@ import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
 import PantryApp from './components/PantryApp';
-import Login from './components/Login';
+import LoginPage from './components/LoginPage';
 import JoinPantry from './components/JoinPantry';
-import InviteSignup from './components/InviteSignup';
 import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -31,8 +30,8 @@ function App() {
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/invite/:inviteCode" element={<InviteSignup />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/login/:inviteCode" element={<LoginPage />} />
                     <Route 
                         path="/*" 
                         element={

@@ -19,6 +19,9 @@ import { FirestoreUserService } from '../db/firestore-user';
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+// Export auth instance for direct use
+export { auth };
+
 // Use emulator in development
 if (process.env.NODE_ENV === 'development') {
     connectAuthEmulator(auth, 'http://localhost:9099');

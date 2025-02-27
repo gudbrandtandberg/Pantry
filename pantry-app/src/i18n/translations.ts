@@ -65,11 +65,15 @@ interface Translations {
             title: string;
             email: string;
             password: string;
+            name: string;
+            nameRequired: string;
             submit: string;
             loading: string;
             error: string;
             haveAccount: string;
             login: string;
+            emailInUse: string;
+            weakPassword: string;
         };
         members: string;
         owner: string;
@@ -157,11 +161,15 @@ export const translations: Translations = {
             title: 'Opprett konto',
             email: 'E-post',
             password: 'Passord',
+            name: 'Navn',
+            nameRequired: 'Vennligst skriv inn navnet ditt',
             submit: 'Opprett konto',
             loading: 'Laster...',
             error: 'Kunne ikke opprette konto',
             haveAccount: 'Har du allerede en konto?',
-            login: 'Logg inn'
+            login: 'Logg inn',
+            emailInUse: 'Denne e-postadressen er allerede i bruk',
+            weakPassword: 'Passordet er for svakt'
         },
         members: 'Medlemmer',
         owner: 'Eier',
@@ -246,11 +254,15 @@ export const translations: Translations = {
             title: 'Create Account',
             email: 'Email',
             password: 'Password',
+            name: 'Name',
+            nameRequired: 'Please enter your name',
             submit: 'Sign Up',
             loading: 'Creating account...',
             error: 'Could not create account',
             haveAccount: 'Already have an account?',
-            login: 'Sign In'
+            login: 'Sign In',
+            emailInUse: 'This email is already in use',
+            weakPassword: 'Password is too weak'
         },
         members: 'Members',
         owner: 'Owner',
@@ -335,11 +347,15 @@ export const translations: Translations = {
             title: 'Создать аккаунт',
             email: 'Эл. почта',
             password: 'Пароль',
+            name: 'Имя',
+            nameRequired: 'Пожалуйста, введите ваше имя',
             submit: 'Создать аккаунт',
             loading: 'Создание аккаунта...',
             error: 'Не удалось создать аккаунт',
             haveAccount: 'Уже есть аккаунт?',
-            login: 'Войти'
+            login: 'Войти',
+            emailInUse: 'Этот email уже используется',
+            weakPassword: 'Пароль слишком слабый'
         },
         members: 'Участники',
         owner: 'Владелец',
