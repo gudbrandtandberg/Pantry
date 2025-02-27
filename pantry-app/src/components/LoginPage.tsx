@@ -233,29 +233,31 @@ export default function LoginPage() {
                         </div>
                     </div>
 
-                    <p className="mt-4 text-center text-sm text-gray-600">
-                        {isSignUp ? (
-                            <>
-                                {t.signup.haveAccount}{' '}
-                                <button
-                                    onClick={() => setIsSignUp(false)}
-                                    className="text-blue-500 hover:text-blue-600"
-                                >
-                                    {t.signup.login}
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                {t.login.noAccount}{' '}
-                                <button
-                                    onClick={() => setIsSignUp(true)}
-                                    className="text-blue-500 hover:text-blue-600"
-                                >
-                                    {t.signup.submit}
-                                </button>
-                            </>
-                        )}
-                    </p>
+                    {inviteCode && (
+                        <p className="mt-4 text-center text-sm text-gray-600">
+                            {isSignUp ? (
+                                <>
+                                    {t.signup.haveAccount}{' '}
+                                    <button
+                                        onClick={() => setIsSignUp(false)}
+                                        className="text-blue-500 hover:text-blue-600"
+                                    >
+                                        {t.signup.login}
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    {t.login.noAccount}{' '}
+                                    <button
+                                        onClick={() => setIsSignUp(true)}
+                                        className="text-blue-500 hover:text-blue-600"
+                                    >
+                                        {t.signup.submit}
+                                    </button>
+                                </>
+                            )}
+                        </p>
+                    )}
                 </div>
             </div>
             <div className="mt-auto">
