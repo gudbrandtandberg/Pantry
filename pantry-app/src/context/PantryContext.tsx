@@ -158,7 +158,12 @@ export function PantryProvider({ children }: { children: ReactNode }) {
                     addedBy: user.id
                 }
             },
-            inviteLinks: {}
+            inviteLinks: {
+                _placeholder: {
+                    createdAt: Date.now(),
+                    used: false
+                }
+            }
         });
         
         // Wait for the next Firestore sync before setting current pantry
@@ -302,17 +307,14 @@ export function PantryProvider({ children }: { children: ReactNode }) {
             throw new Error('No pantry selected');
         }
 
-        const updatedPantry = {
-            ...currentPantry,
-            inviteLinks: {
-                ...currentPantry.inviteLinks,
-                [code]: {
-                    createdAt: Date.now(),
-                }
-            }
-        };
+        const pantryRef = doc(db, 'pantries', pantryId);
         
-        await pantryService.updatePantry(pantryId, updatedPantry);
+        // Update using dot notation
+        await updateDoc(pantryRef, {
+            [`inviteLinks.${code}`]: {
+                createdAt: Date.now()
+            }
+        });
     };
 
     const joinPantryWithCode = async (code: string) => {

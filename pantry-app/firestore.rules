@@ -32,10 +32,11 @@ service cloud.firestore {
       allow read: if isSignedIn();  // Allow reading all pantries for listing
       allow create: if isSignedIn();
       allow update: if isSignedIn() && (
-        // Either the user is already a member
+        // Check if user is already a member with proper role
         (resource.data.members != null && 
-         resource.data.members[request.auth.uid] != null) ||
-        // OR they have a valid invite code
+         resource.data.members[request.auth.uid] != null && 
+        resource.data.members[request.auth.uid].role == 'owner') ||
+        // OR check if they're joining with a valid invite link
         (resource.data.inviteLinks != null && 
          request.resource.data.inviteCode in resource.data.inviteLinks)
       );
