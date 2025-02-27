@@ -6,19 +6,28 @@ interface ComboBoxProps {
     onChange: (value: string) => void;
     options: string[];
     placeholder: string;
+    allowCustom?: boolean;
     className?: string;
 }
 
-export default function ComboBox({ value, onChange, options, placeholder, className = '' }: ComboBoxProps) {
+export default function ComboBox({ value, onChange, options, placeholder, allowCustom = false, className = '' }: ComboBoxProps) {
     const [isCustom, setIsCustom] = useState(false);
-    const [customValue, setCustomValue] = useState(value);
+    const [customValue, setCustomValue] = useState('');
     const { t } = useContext(LanguageContext);
+
+    // Reset custom state when value is cleared externally
+    React.useEffect(() => {
+        if (!value) {
+            setIsCustom(false);
+            setCustomValue('');
+        }
+    }, [value]);
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
         if (value === '__custom__') {
             setIsCustom(true);
-            setCustomValue(value);
+            setCustomValue('');
         } else {
             onChange(value);
         }
@@ -54,7 +63,7 @@ export default function ComboBox({ value, onChange, options, placeholder, classN
             {options.map(option => (
                 <option key={option} value={option}>{option}</option>
             ))}
-            <option value="__custom__">{t.customValue}</option>
+            {allowCustom && <option value="__custom__">{t.customValue}</option>}
         </select>
     );
 } 

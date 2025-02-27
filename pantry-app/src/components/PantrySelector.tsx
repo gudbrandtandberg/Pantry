@@ -112,6 +112,7 @@ export default function PantrySelector({ onShare }: PantrySelectorProps) {
                             onChange={setNewPantryLocation}
                             options={locations[language]}
                             placeholder={t.location}
+                            allowCustom={true}
                             className="px-4 py-2"
                         />
                     </div>

@@ -111,6 +111,7 @@ export default function ItemList({ title, products, listType }: ItemListProps) {
                         onChange={setNewItemUnit}
                         options={units[language]}
                         placeholder={t.unit}
+                        allowCustom={true}
                         className="w-32"
                     />
                 </div>
