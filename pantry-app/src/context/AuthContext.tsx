@@ -27,16 +27,21 @@ const AuthContext = createContext<AuthContextType>({
     signUp: async () => { throw new Error('AuthContext not initialized') }
 });
 
-function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Check for existing session
-        authService.getCurrentUser()
-            .then(user => setUser(user))
-            .finally(() => setLoading(false));
+        const checkAuth = async () => {
+            try {
+                const user = await authService.getCurrentUser();
+                setUser(user);
+            } finally {
+                setLoading(false);
+            }
+        };
+        checkAuth();
     }, []);
 
     const signIn = async (email: string, password: string) => {
@@ -47,43 +52,25 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const signInWithGoogle = async () => {
         const user = await authService.signInWithGoogle();
         setUser(user);
+        navigate('/');
     };
-
     const signOut = async () => {
-        console.log('AuthContext: Starting sign out');
-        try {
-            setLoading(true);
-            setUser(null);  // Clear user first to trigger UI updates
-            await new Promise(resolve => setTimeout(resolve, 0));
-            await authService.signOut();
-            console.log('AuthContext: Sign out completed, user state cleared');
-            navigate('/login');
-        } catch (error) {
-            console.error('AuthContext: Sign out failed:', error);
-            throw error;
-        } finally {
-            setLoading(false);
-        }
+        await authService.signOut();
+        navigate('/login');
     };
 
     const signUpWithInvite = async (email: string, password: string, inviteCode: string) => {
         const user = await authService.signUpWithInvite(email, password, inviteCode);
         setUser(user);
     };
-
     const signUp = async (email: string, password: string) => {
-        try {
-            const result = await createUserWithEmailAndPassword(auth, email, password);
-            // Convert Firebase User to our AuthUser type
-            return {
-                id: result.user.uid,
-                email: result.user.email!,
-                displayName: result.user.displayName || undefined
-            };
-        } catch (error) {
-            console.error('Auth signup error:', error);
-            throw error;
-        }
+        const result = await createUserWithEmailAndPassword(auth, email, password);
+        // Convert Firebase User to our AuthUser type
+        return {
+            id: result.user.uid,
+            email: result.user.email!,
+            displayName: result.user.displayName || undefined
+        };
     };
 
     return (

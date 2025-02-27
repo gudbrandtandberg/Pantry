@@ -22,7 +22,7 @@ const pantryService = new FirestorePantryService();
 export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePantryDialogProps) {
     const { t } = useContext(LanguageContext);
     const { loading: authLoading, user } = useAuth();
-    const { savePantry, isOwner, loading } = usePantry();
+    const { isOwner } = usePantry();
     const [inviteLink, setInviteLink] = useState<string | null>(null);
     const [isCreatingLink, setIsCreatingLink] = useState(false);
     const [memberData, setMemberData] = useState<Record<string, UserData>>({});
@@ -59,7 +59,6 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
                     setMemberData(userData);
                 }
             } catch (error) {
-                console.log('Fetch member data error:', error);
                 if (mounted) {
                     onClose();
                 }
@@ -82,8 +81,6 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
             const code = uuidv4().slice(0, 8);
             await pantryService.createInviteLink(pantry.id, code);
             setInviteLink(`${window.location.origin}/login/${code}`);
-        } catch (error) {
-            console.error('Failed to create invite link:', error);
         } finally {
             setIsCreatingLink(false);
         }

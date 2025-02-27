@@ -1,6 +1,5 @@
 import { useState, useContext, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useUser } from '../context/UserContext';
 import { LanguageContext } from '../context/LanguageContext';
 import { usePantry } from '../context/PantryContext';
 import { CheckIcon, CloudIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
@@ -9,7 +8,6 @@ import LanguageSelector from './LanguageSelector';
 
 export default function UserMenu() {
     const { user, signOut } = useAuth();
-    const { userData } = useUser();
     const { t } = useContext(LanguageContext);
     const { syncStatus } = usePantry();
     const [isOpen, setIsOpen] = useState(false);
@@ -27,12 +25,10 @@ export default function UserMenu() {
     }, []);
 
     const handleSignOut = async () => {
-        console.log('UserMenu: Starting sign out');
         try {
             await signOut();
-            console.log('UserMenu: Sign out completed');
         } catch (error) {
-            console.error('UserMenu: Sign out failed:', error);
+            // Handle error silently - user will see login page anyway
         }
     };
 

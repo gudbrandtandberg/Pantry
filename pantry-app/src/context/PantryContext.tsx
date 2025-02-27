@@ -142,10 +142,9 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         if (!user) return;
         
         const pantryId = uuidv4();
-        
         setSyncStatus('syncing');
         
-        const newPantry = await pantryService.createPantry({
+        await pantryService.createPantry({
             ...pantry,
             id: pantryId,
             createdBy: user.id,
@@ -322,9 +321,6 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         if (!currentUser) throw new Error('Must be logged in');
         const userId = currentUser.uid;
         
-        console.log('Attempting to join pantry with code:', code);
-        console.log('Current user ID:', userId);
-        
         const pantryQuery = query(
             collection(db, 'pantries'),
             where(`inviteLinks.${code}`, '!=', null)
@@ -333,104 +329,65 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         const querySnapshot = await getDocs(pantryQuery);
         const pantryDoc = querySnapshot.docs[0];
         if (!pantryDoc) {
-            console.log('No pantry found with code');
             throw new Error(t.invalidInviteLink);
         }
         
         const pantry = { id: pantryDoc.id, ...pantryDoc.data() } as FirestorePantry;
-        console.log('Found pantry:', {
-            id: pantry.id,
-            members: pantry.members,
-            inviteLinks: pantry.inviteLinks
-        });
         
         const invite = pantry.inviteLinks?.[code];
-        console.log('Found invite:', invite);
         if (!invite) {
-            console.log('No invite found with code in pantry');
             throw new Error(t.invalidInviteLink);
         }
         
         if (pantry.members?.[userId]) {
-            console.log('User already a member');
             throw new Error(t.alreadyMember);
         }
         
-        console.log('Updating pantry with new member:', userId);
+        const pantryRef = doc(db, 'pantries', pantry.id);
         
-        try {
-            const pantryRef = doc(db, 'pantries', pantry.id);
-            
-            // Do the update in two steps
-            // 1. First ensure members object exists
-            if (!pantry.members) {
-                console.log('Creating members object...');
-                await updateDoc(pantryRef, {
-                    members: {},
-                    inviteCode: code
-                });
-                console.log('Members object created');
-            }
-            
-            // 2. Then add the new member
-            console.log('Adding member with data:', {
-                [`members.${userId}`]: {
-                    role: 'editor',
-                    addedAt: Date.now(),
-                    addedBy: userId
-                },
-                inviteCode: code
-            });
-            
+        // Do the update in two steps
+        // 1. First ensure members object exists
+        if (!pantry.members) {
             await updateDoc(pantryRef, {
-                [`members.${userId}`]: {
-                    role: 'editor',
-                    addedAt: Date.now(),
-                    addedBy: userId
-                },
+                members: {},
                 inviteCode: code
             });
+        }
+        
+        // 2. Then add the new member
+        await updateDoc(pantryRef, {
+            [`members.${userId}`]: {
+                role: 'editor',
+                addedAt: Date.now(),
+                addedBy: userId
+            },
+            inviteCode: code
+        });
+        
+        // Get the updated pantry data
+        const updatedPantryDoc = await getDoc(pantryRef);
+        if (updatedPantryDoc.exists()) {
+            const updatedPantry = { 
+                id: updatedPantryDoc.id, 
+                ...updatedPantryDoc.data() 
+            } as FirestorePantry;
             
-            console.log('Successfully joined pantry');
+            // Add to pantries list
+            setPantries(prev => {
+                // Check if pantry already exists in list
+                const exists = prev.some(p => p.id === updatedPantry.id);
+                if (exists) {
+                    // Update existing pantry
+                    return prev.map(p => 
+                        p.id === updatedPantry.id ? updatedPantry : p
+                    );
+                }
+                // Add new pantry
+                return [...prev, updatedPantry];
+            });
             
-            // Get the updated pantry data
-            const updatedPantryDoc = await getDoc(pantryRef);
-            if (updatedPantryDoc.exists()) {
-                const updatedPantry = { 
-                    id: updatedPantryDoc.id, 
-                    ...updatedPantryDoc.data() 
-                } as FirestorePantry;
-                
-                // Add to pantries list
-                setPantries(prev => {
-                    // Check if pantry already exists in list
-                    const exists = prev.some(p => p.id === updatedPantry.id);
-                    if (exists) {
-                        // Update existing pantry
-                        return prev.map(p => 
-                            p.id === updatedPantry.id ? updatedPantry : p
-                        );
-                    }
-                    // Add new pantry
-                    return [...prev, updatedPantry];
-                });
-                
-                // Set as current pantry
-                setCurrentPantry(updatedPantry);
-                
-                console.log('Updated pantries list and set current pantry');
-            }
-
-        } catch (error) {
-            console.error('Failed to join pantry:', error);
-            if (error instanceof Error) {
-                console.error('Error details:', {
-                    message: error.message,
-                    name: error.name,
-                    stack: error.stack
-                });
-            }
-            throw error;
+            // Set as current pantry
+            setCurrentPantry(updatedPantry);
         }
     };
 

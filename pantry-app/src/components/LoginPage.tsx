@@ -7,7 +7,6 @@ import LoadingSpinner from './LoadingSpinner';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FirestoreUserService } from '../services/db/firestore-user';
 import { usePantry } from '../context/PantryContext';
-import { auth } from '../services/auth/firebase-auth';
 
 const userService = new FirestoreUserService();
 
@@ -26,9 +25,7 @@ export default function LoginPage() {
     const { joinPantryWithCode } = usePantry();
 
     useEffect(() => {
-        if (inviteCode) {
-            console.log('Processing invite code:', inviteCode);
-        }
+        // Remove empty effect or add actual functionality
     }, [inviteCode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -59,7 +56,6 @@ export default function LoginPage() {
                     try {
                         await joinPantryWithCode(inviteCode);
                     } catch (err) {
-                        console.error('Failed to join pantry:', err);
                         setError(err.message);
                         return;
                     }
@@ -80,7 +76,6 @@ export default function LoginPage() {
                 }
             }
         } catch (err: unknown) {
-            console.error('Signup error:', err);
             if (err instanceof FirebaseError) {
                 switch (err.code) {
                     case 'auth/email-already-in-use':

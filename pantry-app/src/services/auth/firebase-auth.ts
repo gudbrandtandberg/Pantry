@@ -15,6 +15,7 @@ import {
 import type { AuthService, AuthUser } from './types';
 import { firebaseConfig } from '../../config/firebase';
 import { FirestoreUserService } from '../db/firestore-user';
+import { FirebaseError } from 'firebase/app';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -32,19 +33,27 @@ const microsoftProvider = new OAuthProvider('microsoft.com');
 
 const userService = new FirestoreUserService();
 
-const getAuthErrorMessage = (error: any): string => {
-    switch (error.code) {
-        case 'auth/user-not-found':
-            return 'No account found with this email address';
-        case 'auth/wrong-password':
-            return 'Incorrect password';
-        case 'auth/invalid-email':
-            return 'Please enter a valid email address';
-        case 'auth/too-many-requests':
-            return 'Too many attempts. Please try again later';
-        default:
-            return 'An error occurred during sign in';
+export const handleError = (error: FirebaseError | Error | unknown): string => {
+    if (error instanceof FirebaseError) {
+        switch (error.code) {
+            case 'auth/user-not-found':
+                return 'No account found with this email address';
+            case 'auth/wrong-password':
+                return 'Incorrect password';
+            case 'auth/invalid-email':
+                return 'Please enter a valid email address';
+            case 'auth/too-many-requests':
+                return 'Too many attempts. Please try again later';
+        }
     }
+    return 'An unexpected error occurred';
+};
+
+export const handleAuthError = (error: FirebaseError | Error | unknown): void => {
+    if (error instanceof FirebaseError) {
+        throw error;
+    }
+    throw error;
 };
 
 export class FirebaseAuthService implements AuthService {
@@ -68,20 +77,13 @@ export class FirebaseAuthService implements AuthService {
                 email: result.user.email!,
                 displayName: result.user.displayName || undefined
             };
-        } catch (error: any) {
-            throw new Error(getAuthErrorMessage(error));
+        } catch (error) {
+            throw new Error(handleError(error));
         }
     }
 
     async signOut(): Promise<void> {
-        console.log('FirebaseAuth: Starting sign out');
-        try {
-            await auth.signOut();
-            console.log('FirebaseAuth: Sign out completed');
-        } catch (error) {
-            console.error('FirebaseAuth: Sign out failed:', error);
-            throw error;
-        }
+        await auth.signOut();
     }
 
     async getCurrentUser(): Promise<AuthUser | null> {
