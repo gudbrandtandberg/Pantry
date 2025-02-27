@@ -10,9 +10,7 @@ interface LoginProps {
 export default function Login({ returnTo }: LoginProps) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
     const { signIn, signInWithGoogle } = useAuth();
     const { t } = useContext(LanguageContext);
     const navigate = useNavigate();
@@ -22,16 +20,12 @@ export default function Login({ returnTo }: LoginProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
-        setLoading(true);
-
+        
         try {
             await signIn(email, password);
             navigate(returnPath || '/');
         } catch (err) {
-            console.error('Login error:', err);
             setError(err instanceof Error ? err.message : 'Unknown error');
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -40,7 +34,6 @@ export default function Login({ returnTo }: LoginProps) {
             await signInWithGoogle();
             navigate(returnPath || '/');
         } catch (err) {
-            console.error('Google login error:', err);
             setError(err instanceof Error ? err.message : 'Unknown error');
         }
     };
@@ -83,22 +76,8 @@ export default function Login({ returnTo }: LoginProps) {
                         />
                     </div>
                     
-                    <div className="flex items-center">
-                        <input
-                            type="checkbox"
-                            id="remember-me"
-                            checked={rememberMe}
-                            onChange={(e) => setRememberMe(e.target.checked)}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                            {t.login.rememberMe}
-                        </label>
-                    </div>
-                    
                     <button
                         type="submit"
-                        disabled={loading}
                         className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
                     >
                         {t.login.submit}

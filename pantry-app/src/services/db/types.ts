@@ -53,17 +53,17 @@ export interface FirestorePantry {
 }
 
 export interface PantryService {
-    createPantry: (pantry: Omit<FirestorePantry, 'createdAt' | 'updatedAt'>) => Promise<FirestorePantry>;
-    getPantry: (pantryId: string) => Promise<FirestorePantry | null>;
+    createPantry: (pantry: FirestorePantry) => Promise<FirestorePantry>;
+    getPantry: (id: string) => Promise<FirestorePantry | null>;
     getUserPantries: (userId: string) => Promise<FirestorePantry[]>;
-    updatePantry: (pantryId: string, data: Partial<FirestorePantry>) => Promise<void>;
-    deletePantry: (pantryId: string) => Promise<void>;
-    addItem: (pantryId: string, list: 'inStock' | 'shoppingList', item: Omit<PantryItem, 'lastUpdated'>) => Promise<void>;
-    updateItem: (pantryId: string, list: 'inStock' | 'shoppingList', item: PantryItem) => Promise<void>;
-    removeItem: (pantryId: string, list: 'inStock' | 'shoppingList', itemId: string) => Promise<void>;
-    moveItem: (pantryId: string, fromList: 'inStock' | 'shoppingList', toList: 'inStock' | 'shoppingList', itemId: string) => Promise<void>;
-    addMember: (pantryId: string, member: PantryMember) => Promise<void>;
-    removeMember: (pantryId: string, userId: string) => Promise<void>;
+    updatePantry: (_pantryId: string, _data: Partial<FirestorePantry>) => Promise<void>;
+    deletePantry: (_pantryId: string) => Promise<void>;
+    addItem: (_pantryId: string, _list: 'inStock' | 'shoppingList', _item: Omit<PantryItem, 'lastUpdated'>) => Promise<void>;
+    updateItem: (_pantryId: string, _list: 'inStock' | 'shoppingList', _item: PantryItem) => Promise<void>;
+    removeItem: (_pantryId: string, _list: 'inStock' | 'shoppingList', _itemId: string) => Promise<void>;
+    moveItem: (_pantryId: string, _fromList: 'inStock' | 'shoppingList', _toList: 'inStock' | 'shoppingList', _itemId: string) => Promise<void>;
+    addMember: (_pantryId: string, _member: PantryMember) => Promise<void>;
+    removeMember: (_pantryId: string, _userId: string) => Promise<void>;
 }
 
 export interface UserService {

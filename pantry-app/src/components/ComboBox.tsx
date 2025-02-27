@@ -11,14 +11,14 @@ interface ComboBoxProps {
 
 export default function ComboBox({ value, onChange, options, placeholder, className = '' }: ComboBoxProps) {
     const [isCustom, setIsCustom] = useState(false);
-    const [customValue, setCustomValue] = useState(value || '');
+    const [customValue, setCustomValue] = useState(value);
     const { t } = useContext(LanguageContext);
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
         if (value === '__custom__') {
             setIsCustom(true);
-            setCustomValue('');
+            setCustomValue(value);
         } else {
             onChange(value);
         }

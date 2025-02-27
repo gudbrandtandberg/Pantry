@@ -56,26 +56,19 @@ export class FirestorePantryService implements PantryService {
     }
 
     async getUserPantries(userId: string): Promise<FirestorePantry[]> {
-        console.log('Getting pantries for user:', userId);
-        // Get all pantries where user is a member
         const pantryCollection = collection(db, 'pantries');
         const membershipRefs = await getDocs(pantryCollection);
         
         if (membershipRefs.empty) {
-            console.log('No pantries found in collection');
             return [];
         }
 
-        console.log('Found pantry docs:', membershipRefs.docs.map(d => ({id: d.id, data: d.data()})));
         const pantries: FirestorePantry[] = [];
 
         for (const pantryDoc of membershipRefs.docs) {
-            console.log('Checking membership for pantry:', pantryDoc.id);
             const memberDoc = await getDoc(doc(db, 'pantries', pantryDoc.id, 'members', userId));
-            console.log('Member doc exists?', memberDoc.exists(), memberDoc.data());
             if (memberDoc.exists()) {
                 const data = pantryDoc.data();
-                // Ensure arrays are initialized
                 pantries.push({
                     ...data,
                     inStock: data.inStock || [],
@@ -84,7 +77,6 @@ export class FirestorePantryService implements PantryService {
             }
         }
 
-        console.log('Returning pantries:', pantries);
         return pantries;
     }
 
@@ -114,7 +106,6 @@ export class FirestorePantryService implements PantryService {
         list: 'inStock' | 'shoppingList', 
         item: Omit<PantryItem, 'lastUpdated'>
     ): Promise<void> {
-        console.log('Adding item to pantry:', { pantryId, list, item });
         const docRef = doc(db, 'pantries', pantryId);
         
         // Clean up undefined values
@@ -126,16 +117,11 @@ export class FirestorePantryService implements PantryService {
             ...(item.unit && { unit: item.unit })
         };
         
-        console.log('Clean item with timestamp:', cleanItem);
         await updateDoc(docRef, {
             [list]: arrayUnion(cleanItem),
             updatedAt: new Date()
         });
-        console.log('Item added successfully');
 
-        // Verify the update
-        const updated = await this.getPantry(pantryId);
-        console.log('Updated pantry:', updated);
     }
 
     async updateItem(

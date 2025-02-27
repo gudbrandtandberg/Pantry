@@ -35,8 +35,7 @@ function UserProvider({ children }: { children: ReactNode }) {
                 setUserData(data);
                 setLoading(false);
             })
-            .catch(error => {
-                console.error('Error loading user data:', error);
+            .catch(() => {
                 setLoading(false);
             });
     }, [user]);

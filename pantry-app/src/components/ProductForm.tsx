@@ -5,11 +5,14 @@ import { Product } from '../types';
 import { commonUnits } from '../i18n/translations';
 
 interface ProductFormProps {
-    onSubmit: (product: Product) => void;
+    onSubmit: (Product) => void;
     onCancel: () => void;
 }
 
-export default function ProductForm({ onSubmit, onCancel }: ProductFormProps) {
+export default function ProductForm({
+    onSubmit,
+    onCancel
+}: ProductFormProps) {
     const { t } = useContext(LanguageContext);
     const [name, setName] = useState('');
     const [quantity, setQuantity] = useState('');

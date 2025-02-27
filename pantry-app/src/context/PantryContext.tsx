@@ -1,11 +1,10 @@
-import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { doc, onSnapshot, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../services/db/firestore';
 import { FirestorePantry, PantryItem } from '../services/db/types';
 import { FirestorePantryService } from '../services/db/firestore-pantry';
 import { useAuth } from './AuthContext';
 import { v4 as uuidv4 } from 'uuid';
-import { debounce } from 'lodash';
 import { LanguageContext } from './LanguageContext';
 
 interface PantryError extends Error {
@@ -27,7 +26,7 @@ interface PantryContextType {
     syncStatus: 'synced' | 'syncing' | 'error';
     createInviteLink: (pantryId: string, code: string) => Promise<void>;
     isOwner: (pantryId: string) => boolean;
-    joinPantryWithCode: (code: string) => Promise<void>;
+    joinPantryWithCode: (string) => Promise<void>;
 }
 
 const PantryContext = createContext<PantryContextType | null>(null);
@@ -45,7 +44,6 @@ export function PantryProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (!user) {
-            console.log('No user, clearing pantries');
             setPantries([]);
             setCurrentPantry(null);
             setLoading(false);
@@ -57,7 +55,7 @@ export function PantryProvider({ children }: { children: ReactNode }) {
             try {
                 await pantryService.migrateOldPantries(user.id);
             } catch (err) {
-                console.error('Error migrating pantries:', err);
+                setError(err as PantryError);
             }
         };
         
@@ -84,7 +82,6 @@ export function PantryProvider({ children }: { children: ReactNode }) {
                     ['owner', 'editor'].includes(pantry.members[user.id].role)
                 );
                 
-                console.log('Loaded pantries:', userPantries);
                 setPantries(userPantries);
                 
                 // Set first pantry as current if none selected
@@ -95,7 +92,6 @@ export function PantryProvider({ children }: { children: ReactNode }) {
                 setLoading(false);
             },
             (error) => {
-                console.error('Error watching pantries:', error);
                 setError(error as PantryError);
                 setLoading(false);
             }
@@ -114,11 +110,10 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         const unsubscribe = onSnapshot(
             doc(db, 'pantries', currentPantry.id),
             (doc) => {
-                console.log('Snapshot received:', doc.data());
                 if (!doc.exists()) {
-                    console.warn('Pantry no longer exists:', currentPantry.id);
                     setCurrentPantry(null);
                     setSyncStatus('error');
+                    setError(new Error('Pantry no longer exists') as PantryError);
                     return;
                 }
                 
@@ -132,8 +127,8 @@ export function PantryProvider({ children }: { children: ReactNode }) {
                 setSyncStatus('synced');
             },
             (error) => {
-                console.error('Error watching pantry:', error, 'for pantry:', currentPantry.id);
                 setSyncStatus('error');
+                setError(error as PantryError);
             }
         );
         
@@ -163,7 +158,6 @@ export function PantryProvider({ children }: { children: ReactNode }) {
             inviteLinks: {}
         });
         
-        console.log('Created pantry:', newPantry);
         setCurrentPantry(newPantry);
     };
 
@@ -197,11 +191,8 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         });
         
         try {
-            // Actually perform the server update
             await pantryService.addItem(currentPantry.id, list, newItem);
         } catch (err) {
-            console.error('Error adding item:', err);
-            // Roll back on error
             setCurrentPantry(previousPantry);
             setError(err as PantryError);
             throw err;
@@ -227,8 +218,6 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         try {
             await pantryService.updateItem(currentPantry.id, list, updatedItem);
         } catch (err) {
-            console.error('Error updating item:', err);
-            // Roll back on error
             setCurrentPantry(previousPantry);
             setError(err as PantryError);
             throw err;
@@ -249,8 +238,6 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         try {
             await pantryService.removeItem(currentPantry.id, list, itemId);
         } catch (err) {
-            console.error('Error removing item:', err);
-            // Roll back on error
             setCurrentPantry(previousPantry);
             setError(err as PantryError);
             throw err;
@@ -279,8 +266,6 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         try {
             await pantryService.moveItem(currentPantry.id, fromList, toList, itemId);
         } catch (err) {
-            console.error('Error moving item:', err);
-            // Roll back on error
             setCurrentPantry(previousPantry);
             setError(err as PantryError);
             throw err;

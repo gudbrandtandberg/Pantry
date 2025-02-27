@@ -3,16 +3,16 @@ import { AuthService, AuthUser } from './types';
 export class MockAuthService implements AuthService {
     private currentUser: AuthUser | null = null;
 
-    async signIn(email: string, password: string, remember?: boolean): Promise<AuthUser> {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        this.currentUser = {
-            id: 'mock-user-1',
-            email: email,
-            displayName: 'Mock User'
-        };
-        return this.currentUser;
+    async signIn(_email: string, _password: string): Promise<AuthUser> {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve({
+                    id: 'mock-user-id',
+                    email: 'mock@example.com',
+                    displayName: 'Mock User'
+                });
+            }, 1000);
+        });
     }
 
     async signOut(): Promise<void> {

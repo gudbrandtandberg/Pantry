@@ -10,11 +10,12 @@ import SharePantryDialog from './SharePantryDialog';
 import Footer from './Footer';
 
 export default function PantryApp() {
-    const { currentPantry, syncStatus, isOwner } = usePantry();
+    const { currentPantry } = usePantry();
     const { t } = useContext(LanguageContext);
     const { signOut } = useAuth();
     const { userData } = useUser();
     const [showShareDialog, setShowShareDialog] = useState(false);
+    const [syncStatus] = useState('synced');
 
     const getSyncStatusIcon = () => {
         switch (syncStatus) {

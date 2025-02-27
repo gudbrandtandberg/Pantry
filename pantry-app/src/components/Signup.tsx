@@ -24,7 +24,6 @@ export default function Signup() {
             // If we have a returnTo parameter, navigate there, otherwise go home
             navigate(returnTo || '/');
         } catch (err) {
-            console.error('Signup error:', err);
             setError(err instanceof Error ? err.message : 'Unknown error');
         } finally {
             setLoading(false);

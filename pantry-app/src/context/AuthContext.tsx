@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { AuthService, AuthUser } from '../services/auth/types';
 import { FirebaseAuthService } from '../services/auth/firebase-auth';
-import { MockAuthService } from '../services/auth/mock-auth';
 
 const authService: AuthService = process.env.NODE_ENV === 'development' 
     ? new FirebaseAuthService()  // Switch to Firebase for testing

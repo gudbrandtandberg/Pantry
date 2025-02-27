@@ -16,7 +16,7 @@ export interface Pantry {
 
 // Abstract storage interface that we can implement differently later
 export interface StorageInterface {
-    getPantries: () => Promise<Pantry[]>;
-    savePantry: (pantry: Pantry) => Promise<void>;
-    deletePantry: (id: string) => Promise<void>;
+    getPantries(): Promise<Pantry[]>;
+    savePantry(pantry: Pantry): Promise<void>;
+    deletePantry(id: string): Promise<void>;
 } 

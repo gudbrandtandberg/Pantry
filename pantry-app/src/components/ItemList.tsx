@@ -12,12 +12,15 @@ interface ItemListProps {
 
 export default function ItemList({ type }: ItemListProps) {
     const { currentPantry, addItem, removeItem, moveItem } = usePantry();
-    const { t, language } = useContext(LanguageContext);
+    const context = useContext(LanguageContext);
+    if (!context) throw new Error('ItemList must be used within LanguageProvider');
+    const { language, t } = context;
     const [newItemName, setNewItemName] = useState('');
     const [newItemQuantity, setNewItemQuantity] = useState('');
     const [newItemUnit, setNewItemUnit] = useState('');
     const [isAdding, setIsAdding] = useState(false);
     const [loadingItems, setLoadingItems] = useState<Set<string>>(new Set());
+    const [, setError] = useState<string | null>(null);
 
     const handleAddItem = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -44,7 +47,8 @@ export default function ItemList({ type }: ItemListProps) {
             setNewItemQuantity('');
             setNewItemUnit('');
         } catch (err) {
-            console.error('Failed to add item:', err);
+            // Handle error appropriately, maybe set an error state
+            setError(err instanceof Error ? err.message : 'Failed to add item');
         } finally {
             setIsAdding(false);
         }

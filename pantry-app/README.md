@@ -1,50 +1,68 @@
-# React + TypeScript + Vite
+# Family Pantry App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A collaborative pantry management app for families.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Multi-user pantry management
+- Real-time synchronization
+- Shared shopping lists
+- Invite system for pantry sharing
+- Multi-language support (English, Norwegian, Russian)
+- Authentication with email/password and Google
+- Responsive design
 
-## Expanding the ESLint configuration
+## Development
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install
+npm run dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Current Version
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+v0.1.0
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Roadmap
+
+### Completed ✅
+
+- [x] Basic pantry management
+- [x] User authentication (Email + Google)
+- [x] Real-time updates
+- [x] Sharing functionality
+- [x] Multi-language support
+- [x] Member management
+
+### Up Next 🚀
+
+- [ ] User Management
+  - Profile settings
+  - Language preferences
+  - Account deletion
+
+### Future Enhancements 🌟
+
+- [ ] Offline Support
+  - Cache data for offline use
+  - Queue updates
+- [ ] Mobile Experience
+  - PWA support
+  - Touch optimizations
+- [ ] Data Management
+  - Export/Import functionality
+  - Backup options
+- [ ] Notifications
+  - Item updates
+  - Member activity
+  - Low stock warnings
+
+## Security
+
+- Firebase Authentication
+- Firestore Security Rules
+- Role-based access control
+
+## License
+
+All rights reserved © Duff Development
