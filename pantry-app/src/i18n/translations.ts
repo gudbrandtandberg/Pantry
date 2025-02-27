@@ -75,6 +75,11 @@ interface Translations {
         owner: string;
         editor: string;
         loading: string;
+        inviteFriends: string;
+        generateInviteLink: string;
+        generating: string;
+        invalidInviteCode: string;
+        signupWithInvite: string;
     };
 }
 
@@ -136,7 +141,7 @@ export const translations: Translations = {
         currentMembers: 'Nåværende medlemmer',
         createInviteLink: 'Lag invitasjonslenke',
         creatingLink: 'Lager lenke...',
-        inviteLinkCreated: 'Invitasjonslenke opprettet! Del denne med andre:',
+        inviteLinkCreated: 'Del denne lenken med vennene dine:',
         copy: 'Kopier',
         close: 'Lukk',
         onlyOwnerCanShare: 'Bare eiere kan dele matskapet',
@@ -160,6 +165,11 @@ export const translations: Translations = {
         owner: 'Eier',
         editor: 'Redaktør',
         loading: 'Laster...',
+        inviteFriends: 'Inviter venner',
+        generateInviteLink: 'Generer invitasjonslenke',
+        generating: 'Genererer...',
+        invalidInviteCode: 'Ugyldig invitasjonskode',
+        signupWithInvite: 'Registrer deg med invitasjon',
     },
     'en': {
         title: 'Family Pantry',
@@ -242,6 +252,11 @@ export const translations: Translations = {
         owner: 'Owner',
         editor: 'Editor',
         loading: 'Loading...',
+        inviteFriends: 'Invite Friends',
+        generateInviteLink: 'Generate Invite Link',
+        generating: 'Generating...',
+        invalidInviteCode: 'Invalid invite code',
+        signupWithInvite: 'Sign up with invite',
     },
     'ru': {
         title: 'Семейная Кладовая',
@@ -300,7 +315,7 @@ export const translations: Translations = {
         currentMembers: 'Текущие участники',
         createInviteLink: 'Создать ссылку-приглашение',
         creatingLink: 'Создание ссылки...',
-        inviteLinkCreated: 'Ссылка создана! Поделитесь ею с другими:',
+        inviteLinkCreated: 'Поделитесь этой ссылкой с друзьями:',
         copy: 'Копировать',
         close: 'Закрыть',
         onlyOwnerCanShare: 'Только владельцы могут делиться кладовой',
@@ -324,6 +339,11 @@ export const translations: Translations = {
         owner: 'Владелец',
         editor: 'Редактор',
         loading: 'Загрузка...',
+        inviteFriends: 'Пригласить друзей',
+        generateInviteLink: 'Создать пригласительную ссылку',
+        generating: 'Создание...',
+        invalidInviteCode: 'Неверный код приглашения',
+        signupWithInvite: 'Регистрация по приглашению',
     }
 };
 

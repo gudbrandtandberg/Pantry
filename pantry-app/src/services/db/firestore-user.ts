@@ -1,6 +1,7 @@
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from './firestore';
-import { UserService, UserPreferences, UserData } from './types';
+import { UserService, UserPreferences, UserData, UserInviteLink } from './types';
+import { v4 as uuidv4 } from 'uuid';
 
 export class FirestoreUserService implements UserService {
     async createUser(user: { id: string; email: string; displayName?: string }): Promise<UserData> {
@@ -42,5 +43,23 @@ export class FirestoreUserService implements UserService {
             'preferences': preferences,
             'updatedAt': new Date()
         });
+    }
+
+    async createInviteLink(): Promise<string> {
+        const code = uuidv4().slice(0, 8);
+        const inviteRef = doc(db, 'invites', code);
+        
+        await setDoc(inviteRef, {
+            code,
+            createdAt: Date.now()
+        });
+
+        return code;
+    }
+
+    async validateInviteCode(code: string): Promise<boolean> {
+        const inviteRef = doc(db, 'invites', code);
+        const docSnap = await getDoc(inviteRef);
+        return docSnap.exists();
     }
 } 

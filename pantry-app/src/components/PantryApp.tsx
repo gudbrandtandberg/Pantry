@@ -8,6 +8,8 @@ import ItemList from './ItemList';
 import { CheckIcon, CloudIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import SharePantryDialog from './SharePantryDialog';
 import Footer from './Footer';
+import UserMenu from './UserMenu';
+import LanguageSelector from './LanguageSelector';
 
 export default function PantryApp() {
     const { currentPantry } = usePantry();
@@ -53,36 +55,34 @@ export default function PantryApp() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div className="min-h-screen bg-blue-100 p-4">
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">{currentPantry?.name}</h1>
-                <div className="flex items-center gap-4 relative">
-                    <div className="absolute right-full mr-4">
-                        {getSyncStatusIcon()}
-                    </div>
-                    <span className="text-gray-600">{userData?.displayName}</span>
-                    <button
-                        onClick={signOut}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md"
-                    >
-                        {t.signOut}
-                    </button>
+                <div className="flex items-center gap-4">
+                    <LanguageSelector />
                 </div>
+                <UserMenu />
             </div>
-            <PantrySelector />
-            
-            {currentPantry && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
-                    <div className="bg-white p-4 rounded-lg shadow">
-                        <ItemList type="inStock" />
+
+            <div className="container mx-auto">
+                <PantrySelector onShare={() => setShowShareDialog(true)} />
+                
+                {currentPantry && (
+                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <ItemList
+                            title={t.inStock}
+                            products={currentPantry.inStock}
+                            listType="inStock"
+                        />
+                        <ItemList
+                            title={t.shoppingList}
+                            products={currentPantry.shoppingList}
+                            listType="shoppingList"
+                        />
                     </div>
-                    <div className="bg-white p-4 rounded-lg shadow">
-                        <ItemList type="shoppingList" />
-                    </div>
-                </div>
-            )}
-            
-            {currentPantry && (
+                )}
+            </div>
+
+            {currentPantry && showShareDialog && (
                 <SharePantryDialog
                     pantry={currentPantry}
                     isOpen={showShareDialog}

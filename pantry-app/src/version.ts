@@ -1,1 +1,1 @@
-export const VERSION = '0.1.0';  // We can increment this manually for now 
+export const VERSION = '0.1.1';  // We can increment this manually for now 

@@ -45,11 +45,13 @@ export interface FirestorePantry {
     inviteLinks: {
         [code: string]: {
             createdAt: number;
-            createdBy: string;
-            expiresAt: number;
-            used: boolean;
         }
     };
+}
+
+export interface UserInviteLink {
+    code: string;
+    createdAt: number;
 }
 
 export interface PantryService {
@@ -70,4 +72,6 @@ export interface UserService {
     createUser: (user: { id: string; email: string; displayName?: string }) => Promise<UserData>;
     getUser: (userId: string) => Promise<UserData | null>;
     updatePreferences: (userId: string, preferences: Partial<UserPreferences>) => Promise<void>;
+    createInviteLink: () => Promise<string>;
+    validateInviteCode: (code: string) => Promise<boolean>;
 } 

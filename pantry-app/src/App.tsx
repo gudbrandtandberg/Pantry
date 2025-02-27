@@ -9,7 +9,7 @@ import Login from './components/Login';
 import LanguageSelector from './components/LanguageSelector';
 import LoadingSpinner from './components/LoadingSpinner';
 import JoinPantry from './components/JoinPantry';
-import Signup from './components/Signup';
+import InviteSignup from './components/InviteSignup';
 import { Routes, Route, BrowserRouter, useSearchParams } from 'react-router-dom';
 
 function AppContent() {
@@ -67,20 +67,14 @@ function App() {
             <AuthProvider>
                 <UserProvider>
                     <LanguageProvider>
-                        <Routes>
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/signup" element={<Signup />} />
-                            <Route path="/join/:code" element={
-                                <PantryProvider>
-                                    <JoinPantry />
-                                </PantryProvider>
-                            } />
-                            <Route path="/" element={
-                                <PantryProvider>
-                                    <UserContent />
-                                </PantryProvider>
-                            } />
-                        </Routes>
+                        <PantryProvider>
+                            <Routes>
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/invite/:inviteCode" element={<InviteSignup />} />
+                                <Route path="/join/:code" element={<JoinPantry />} />
+                                <Route path="/" element={<PantryApp />} />
+                            </Routes>
+                        </PantryProvider>
                     </LanguageProvider>
                 </UserProvider>
             </AuthProvider>

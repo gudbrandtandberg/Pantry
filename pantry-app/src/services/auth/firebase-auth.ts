@@ -102,8 +102,22 @@ export class FirebaseAuthService implements AuthService {
         };
     }
 
-    async signUp(email: string, password: string): Promise<AuthUser> {
+    async signUpWithInvite(email: string, password: string, inviteCode: string): Promise<AuthUser> {
+        // Validate invite code first
+        const isValidInvite = await userService.validateInviteCode(inviteCode);
+        if (!isValidInvite) {
+            throw new Error('Invalid invite code');
+        }
+
         const result = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Create user document
+        await userService.createUser({
+            id: result.user.uid,
+            email: result.user.email!,
+            displayName: result.user.displayName || undefined
+        });
+
         return {
             id: result.user.uid,
             email: result.user.email!,
