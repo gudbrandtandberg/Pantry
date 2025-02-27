@@ -7,6 +7,7 @@ import LoadingSpinner from './LoadingSpinner';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FirestoreUserService } from '../services/db/firestore-user';
 import { usePantry } from '../context/PantryContext';
+import { auth } from '../services/auth/firebase-auth';
 
 const userService = new FirestoreUserService();
 
@@ -50,7 +51,17 @@ export default function LoginPage() {
                     email: user.email,
                     displayName: name.trim()
                 });
+
                 if (inviteCode) {
+                    await new Promise<void>((resolve) => {
+                        const unsubscribe = auth.onAuthStateChanged((user) => {
+                            if (user) {
+                                unsubscribe();
+                                resolve();
+                            }
+                        });
+                    });
+                    
                     try {
                         await joinPantryWithCode(inviteCode);
                         navigate('/');

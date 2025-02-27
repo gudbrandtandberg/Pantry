@@ -392,6 +392,24 @@ export function PantryProvider({ children }: { children: ReactNode }) {
             });
             
             console.log('Successfully joined pantry');
+            
+            // Get the updated pantry data
+            const updatedPantryDoc = await getDoc(pantryRef);
+            if (updatedPantryDoc.exists()) {
+                const updatedPantry = { 
+                    id: updatedPantryDoc.id, 
+                    ...updatedPantryDoc.data() 
+                } as FirestorePantry;
+                
+                // Add to pantries list
+                setPantries(prev => [...prev, updatedPantry]);
+                
+                // Set as current pantry
+                setCurrentPantry(updatedPantry);
+                
+                console.log('Updated pantries list and set current pantry');
+            }
+
         } catch (error) {
             console.error('Failed to join pantry:', error);
             if (error instanceof Error) {
