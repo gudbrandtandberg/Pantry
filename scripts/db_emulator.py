@@ -1,190 +1,134 @@
-from firebase_admin import credentials, initialize_app, firestore
-from datetime import datetime
-import uuid
+import firebase_admin
+from firebase_admin import firestore
+import datetime
 import os
-import time
 
 # Initialize Firebase Admin with emulator
+firebase_admin.initialize_app(options={
+    'projectId': 'tandberg-pantry',
+})
+
+# Configure to use emulator
 os.environ["FIRESTORE_EMULATOR_HOST"] = "localhost:8080"
-initialize_app(options={'projectId': 'tandberg-pantry'})
 db = firestore.client()
 
 # Constants
 TEST_USER_ID = 's1isQk9Oon02UQQ1xQ8R1XDHV9DD'  # Your existing auth user ID
 TEST_EMAIL = 'test@example.com'
-SECOND_USER_ID = 'YOcI5i2K04X8KgVoU0xoll5WHS2K'
-SECOND_USER_EMAIL = 'best@example.com'
+BEST_USER_ID = 'YOcI5i2K04X8KgVoU0xoll5WHS2K'
+BEST_USER_EMAIL = 'best@example.com'
 
-def clear_emulator():
+def clear_collections():
     print('Clearing emulator data...')
-    for collection in ['users', 'pantries']:
+    collections = ['users', 'pantries', 'invites']
+    for collection in collections:
         print(f'Clearing collection: {collection}')
         docs = db.collection(collection).get()
-        doc_count = 0
         for doc in docs:
-            # Delete subcollections first
-            if collection == 'pantries':
-                members = doc.reference.collection('members').get()
-                member_count = 0
-                for member in members:
-                    member.reference.delete()
-                    member_count += 1
-                if member_count > 0:
-                    print(f'  - Deleted {member_count} members from pantry {doc.id}')
-            # Delete main document
             doc.reference.delete()
-            doc_count += 1
-        print(f'  - Deleted {doc_count} documents from {collection}')
     print('Emulator data cleared!')
 
-def populate_emulator():
-    print('Populating emulator with sample data...')
-    
-    # Create users
-    print(f'Creating user: {TEST_EMAIL} (ID: {TEST_USER_ID})')
-    db.collection('users').document(TEST_USER_ID).set({
-        'id': TEST_USER_ID,
-        'email': TEST_EMAIL,
-        'displayName': 'Test User',
-        'preferences': {'language': 'no'},
-        'createdAt': datetime.now(),
-        'updatedAt': datetime.now()
-    })
-
-    print(f'Creating user: {SECOND_USER_EMAIL} (ID: {SECOND_USER_ID})')
-    db.collection('users').document(SECOND_USER_ID).set({
-        'id': SECOND_USER_ID,
-        'email': SECOND_USER_EMAIL,
-        'displayName': 'Best User',
-        'preferences': {'language': 'ru'},
-        'createdAt': datetime.now(),
-        'updatedAt': datetime.now()
-    })
-
-    # Create sample pantries
-    pantries_ref = db.collection('pantries')
-    
-    home_pantry = {
-        'id': 'pantry1',
-        'name': 'Home',
-        'location': 'Hjemme',
-        'createdBy': TEST_USER_ID,
-        'createdAt': int(time.time() * 1000),
-        'updatedAt': int(time.time() * 1000),
-        'inStock': [],
-        'shoppingList': [],
-        'members': {
-            TEST_USER_ID: {
-                'role': 'owner',
-                'addedAt': int(time.time() * 1000),
-                'addedBy': TEST_USER_ID
-            }
+def create_users():
+    print('Creating test users...')
+    users = [
+        {
+            'id': TEST_USER_ID,
+            'email': TEST_EMAIL,
+            'displayName': 'Test User',
+            'preferences': {'language': 'en'},
+            'createdAt': datetime.datetime.now(),
+            'updatedAt': datetime.datetime.now()
         },
-        'inviteLinks': {}
-    }
-    
-    cabin_pantry = {
-        'id': 'pantry2',
-        'name': 'Mountain Cabin',
-        'location': 'Hytta i Fjellet',
-        'createdBy': TEST_USER_ID,
-        'createdAt': int(time.time() * 1000),
-        'updatedAt': int(time.time() * 1000),
-        'inStock': [
-            {
-                'id': 'item5',
-                'name': 'Coffee',
-                'quantity': 1,
-                'unit': 'kg',
-                'lastUpdated': int(time.time() * 1000)
-            }
-        ],
-        'shoppingList': [
-            {
-                'id': 'item6',
-                'name': 'Toilet Paper',
-                'quantity': 8,
-                'unit': 'rolls',
-                'lastUpdated': int(time.time() * 1000)
-            }
-        ],
-        'members': {
-            TEST_USER_ID: {
-                'role': 'owner',
-                'addedAt': int(time.time() * 1000),
-                'addedBy': TEST_USER_ID
-            }
+        {
+            'id': BEST_USER_ID,
+            'email': BEST_USER_EMAIL,
+            'displayName': 'Best User',
+            'preferences': {'language': 'no'},
+            'createdAt': datetime.datetime.now(),
+            'updatedAt': datetime.datetime.now()
         }
-    }
+    ]
     
-    shared_pantry = {
-        'id': 'pantry3',
-        'name': 'Shared Kitchen',
-        'location': 'Delt Kjøkken',
-        'createdBy': TEST_USER_ID,
-        'createdAt': int(time.time() * 1000),
-        'updatedAt': int(time.time() * 1000),
-        'inStock': [
-            {
-                'id': 'item7',
-                'name': 'Sugar',
-                'quantity': 1,
-                'unit': 'kg',
-                'lastUpdated': int(time.time() * 1000)
+    for user in users:
+        print(f'Creating user: {user["email"]} (ID: {user["id"]})')
+        db.collection('users').document(user['id']).set(user)
+
+def create_pantries():
+    print('Creating test pantries...')
+    pantries = [
+        {
+            'id': 'test-pantry-id',
+            'name': 'Test Pantry',
+            'location': 'Home',
+            'createdBy': TEST_USER_ID,
+            'createdAt': datetime.datetime.now(),
+            'updatedAt': datetime.datetime.now(),
+            'members': {
+                TEST_USER_ID: {
+                    'role': 'owner',
+                    'addedAt': datetime.datetime.now(),
+                    'addedBy': TEST_USER_ID
+                }
             },
-            {
-                'id': 'item8',
-                'name': 'Salt',
-                'quantity': 500,
-                'unit': 'g',
-                'lastUpdated': int(time.time() * 1000)
-            }
-        ],
-        'shoppingList': [
-            {
-                'id': 'item9',
-                'name': 'Flour',
-                'quantity': 2,
-                'unit': 'kg',
-                'lastUpdated': int(time.time() * 1000)
-            }
-        ],
-        'members': {
-            TEST_USER_ID: {
-                'role': 'owner',
-                'addedAt': int(time.time() * 1000),
-                'addedBy': TEST_USER_ID
+            'inStock': [
+                {
+                    'id': 'milk-id',
+                    'name': 'Milk',
+                    'quantity': 2,
+                    'unit': 'l',
+                    'lastUpdated': datetime.datetime.now()
+                },
+                {
+                    'id': 'bread-id',
+                    'name': 'Bread',
+                    'quantity': 1,
+                    'unit': 'pcs',
+                    'lastUpdated': datetime.datetime.now()
+                }
+            ],
+            'shoppingList': [
+                {
+                    'id': 'cheese-id',
+                    'name': 'Cheese',
+                    'quantity': 1,
+                    'unit': 'kg',
+                    'lastUpdated': datetime.datetime.now()
+                }
+            ],
+            'inviteLinks': {}
+        },
+        {
+            'id': 'best-pantry-id',
+            'name': 'Best Pantry',
+            'location': 'Mountain Cabin',
+            'createdBy': BEST_USER_ID,
+            'createdAt': datetime.datetime.now(),
+            'updatedAt': datetime.datetime.now(),
+            'members': {
+                BEST_USER_ID: {
+                    'role': 'owner',
+                    'addedAt': datetime.datetime.now(),
+                    'addedBy': BEST_USER_ID
+                }
             },
-            SECOND_USER_ID: {
-                'role': 'editor',
-                'addedAt': int(time.time() * 1000),
-                'addedBy': TEST_USER_ID
-            }
+            'inStock': [],
+            'shoppingList': [],
+            'inviteLinks': {}
         }
-    }
+    ]
     
-    # Set the documents with specific IDs
-    pantries_ref.document('pantry1').set(home_pantry)
-    pantries_ref.document('pantry2').set(cabin_pantry)
-    pantries_ref.document('pantry3').set(shared_pantry)
+    for pantry in pantries:
+        print(f'Creating pantry: {pantry["name"]} (ID: {pantry["id"]})')
+        db.collection('pantries').document(pantry['id']).set(pantry)
 
-    print('\nPopulation complete!')
-
-def reset_emulator():
+def main():
     try:
-        clear_emulator()
-        populate_emulator()
-        print('Emulator reset complete!')
+        clear_collections()
+        create_users()
+        create_pantries()
+        print('\nEmulator setup complete!')
     except Exception as e:
-        print(f'Error resetting emulator: {e}')
+        print(f'Error setting up emulator: {e}')
 
 if __name__ == '__main__':
-    import sys
-    command = sys.argv[1] if len(sys.argv) > 1 else 'reset'
-    
-    if command == 'clear':
-        clear_emulator()
-    elif command == 'populate':
-        populate_emulator()
-    else:
-        reset_emulator() 
+    main() 

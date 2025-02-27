@@ -1,5 +1,97 @@
 # Family Pantry App - Manual Test Plan
 
+## Setup
+1. Start emulators:
+   ```bash
+   firebase emulators:start
+   ```
+2. In another terminal, run the app:
+   ```bash
+   npm run dev
+   ```
+3. Run the emulator setup script:
+   ```bash
+   python scripts/db_emulator.py
+   ```
+
+## Test Scenarios
+
+### 1. Authentication
+- [ ] Visit http://localhost:5173
+- [ ] Should redirect to /login
+- [ ] Try logging in with incorrect credentials
+  - Email: wrong@example.com
+  - Password: wrong
+  - Should show error message
+- [ ] Log in with test account
+  - Email: test@example.com
+  - Password: password123
+  - Should redirect to main app
+
+### 2. Pantry Selection
+- [ ] Should see "Test Pantry" in dropdown
+- [ ] Select "Test Pantry"
+- [ ] Verify items appear in both lists
+- [ ] Create new pantry:
+  - Click "New Pantry"
+  - Name: "Weekend House"
+  - Location: "Mountain Cabin"
+  - Should appear in dropdown
+
+### 3. Item Management
+- [ ] Add item to In Stock:
+  - Name: "Milk"
+  - Quantity: 2
+  - Unit: "l"
+  - Should appear in list
+- [ ] Move item to Shopping List
+  - Click move button
+  - Should disappear from In Stock
+  - Should appear in Shopping List
+- [ ] Delete item
+  - Click delete button
+  - Should be removed
+
+### 4. Sharing & Invites
+- [ ] Click share button
+- [ ] Generate invite link
+- [ ] Open link in incognito window
+- [ ] Create new account with invite:
+  - Email: new@example.com
+  - Password: password123
+- [ ] Verify new user can see shared pantry
+- [ ] Verify new user can add/edit items
+
+### 5. Language Support
+- [ ] Change language to Norwegian
+  - UI should update
+  - Items should remain
+- [ ] Change back to English
+  - UI should update back
+
+### 6. Error Handling
+- [ ] Disconnect internet
+  - Should show sync error icon
+- [ ] Reconnect internet
+  - Should show synced icon
+- [ ] Try deleting non-owned pantry
+  - Should show error message
+
+### 7. Logout Flow
+- [ ] Click logout
+- [ ] Should redirect to login
+- [ ] Verify can't access app without login
+
+## Expected Initial Data
+- Test User:
+  - Email: test@example.com
+  - Password: password123
+  - Has: "Test Pantry" with some items
+- Best User:
+  - Email: best@example.com
+  - Password: password123
+  - Has: "Best Pantry" with different items
+
 ## 1. Authentication
 
 ### Sign Up
