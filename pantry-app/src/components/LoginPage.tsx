@@ -47,22 +47,14 @@ export default function LoginPage() {
                     throw new Error('Failed to create account');
                 }
                 
-                await userService.createUser({
+                const createUserPromise = userService.createUser({
                     id: user.id,
                     email: user.email,
                     displayName: name.trim()
                 });
 
                 if (inviteCode) {
-                    await new Promise<void>((resolve) => {
-                        const unsubscribe = auth.onAuthStateChanged(async (user) => {
-                            if (user) {
-                                await new Promise(r => setTimeout(r, 500));
-                                unsubscribe();
-                                resolve();
-                            }
-                        });
-                    });
+                    await createUserPromise;
                     
                     try {
                         await joinPantryWithCode(inviteCode);
@@ -73,6 +65,10 @@ export default function LoginPage() {
                     }
                 }
 
+                if (!inviteCode) {
+                    await createUserPromise;
+                }
+                
                 await signIn(email, password, rememberMe);
                 navigate('/');
             } else {
