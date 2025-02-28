@@ -80,7 +80,7 @@ export default function SharePantryDialog({ pantry, isOpen, onClose }: SharePant
         try {
             const code = uuidv4().slice(0, 8);
             await pantryService.createInviteLink(pantry.id, code);
-            setInviteLink(`${window.location.origin}/login/${code}`);
+            setInviteLink(`${window.location.origin}/join/${code}`);
         } finally {
             setIsCreatingLink(false);
         }

@@ -19,15 +19,23 @@ export default function LoginPage() {
     const [name, setName] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [isSignUp, setIsSignUp] = useState(false);
+    const [isSignUp, setIsSignUp] = useState(
+        window.location.pathname.startsWith('/invite/') || 
+        window.location.pathname.startsWith('/join/') ||
+        window.location.pathname.includes('/login/')
+    );
     const [rememberMe, setRememberMe] = useState(false);
     const { inviteCode } = useParams();
     const navigate = useNavigate();
     const { joinPantryWithCode } = usePantry();
 
     useEffect(() => {
-        // Remove empty effect or add actual functionality
-    }, [inviteCode]);
+        if (window.location.pathname.startsWith('/invite/') || 
+            window.location.pathname.startsWith('/join/') ||
+            window.location.pathname.includes('/login/')) {
+            setIsSignUp(true);
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,6 +64,8 @@ export default function LoginPage() {
                     
                     try {
                         await joinPantryWithCode(inviteCode);
+                        navigate('/');
+                        return;
                     } catch (err: unknown) {
                         setError(err instanceof Error ? err.message : 'An unknown error occurred');
                         return;
@@ -71,7 +81,12 @@ export default function LoginPage() {
             } else {
                 await signIn(email, password, rememberMe);
                 if (inviteCode) {
-                    navigate(`/join/${inviteCode}`);
+                    try {
+                        await joinPantryWithCode(inviteCode);
+                        navigate('/');
+                    } catch (err: unknown) {
+                        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+                    }
                 } else {
                     navigate('/');
                 }

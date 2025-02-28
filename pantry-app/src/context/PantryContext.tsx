@@ -321,12 +321,25 @@ export function PantryProvider({ children }: { children: ReactNode }) {
         if (!currentUser) throw new Error('Must be logged in');
         const userId = currentUser.uid;
         
-        const pantryQuery = query(
+        // First check if this is a general signup invite
+        const inviteRef = doc(db, 'invites', code);
+        const inviteDoc = await getDoc(inviteRef);
+        if (inviteDoc.exists()) {
+            // This is a valid signup invite, no need to join a pantry
+            return;
+        }
+
+        // If not a signup invite, try to find a pantry invite
+        const q = query(
             collection(db, 'pantries'),
-            where(`inviteLinks.${code}`, '!=', null)
+            where(`inviteLinks.${code}.createdAt`, '>', 0)
         );
-        
-        const querySnapshot = await getDocs(pantryQuery);
+
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+            throw new Error(t.invalidInviteLink);
+        }
+
         const pantryDoc = querySnapshot.docs[0];
         if (!pantryDoc) {
             throw new Error(t.invalidInviteLink);

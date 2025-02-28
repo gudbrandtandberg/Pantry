@@ -31,8 +31,9 @@ function App() {
             <AuthProvider>
                 <PantryProvider>
                     <Routes>
-                        <Route path="/login/:inviteCode?" element={<LoginPage />} />
-                        <Route path="/join/:code" element={<JoinPantry />} />
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/invite/:inviteCode" element={<LoginPage />} />
+                        <Route path="/join/:inviteCode" element={<LoginPage />} />
                         <Route 
                             path="/*" 
                             element={
