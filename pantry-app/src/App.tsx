@@ -4,7 +4,6 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
 import PantryApp from './components/PantryApp';
 import LoginPage from './components/LoginPage';
-import JoinPantry from './components/JoinPantry';
 import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
